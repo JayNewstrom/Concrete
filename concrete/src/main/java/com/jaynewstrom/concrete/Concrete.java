@@ -22,8 +22,8 @@ public final class Concrete {
         ConcreteWall scope = (ConcreteWall) context.getSystemService(CONCRETE_SERVICE);
         if (scope == null) {
             throw new IllegalArgumentException(format(
-                    "Cannot find wall in %s. Make sure your Activity overrides getSystemService() to return its scope if " +
-                            "isConcreteService() is true", context.getClass().getName()
+                    "Cannot find wall in %s. Make sure your Activity overrides getSystemService() to return its scope if "
+                            + "isConcreteService() is true", context.getClass().getName()
             ));
         }
         return scope;
