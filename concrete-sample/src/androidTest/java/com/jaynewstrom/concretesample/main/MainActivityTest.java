@@ -1,4 +1,4 @@
-package com.jaynewstrom.concretesample;
+package com.jaynewstrom.concretesample.main;
 
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
