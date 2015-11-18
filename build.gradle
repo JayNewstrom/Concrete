@@ -34,3 +34,25 @@ subprojects {
         classpath = files()
     }
 }
+
+ext {
+    minSdkVersion = 15
+    targetSdkVersion = 23
+    compileSdkVersion = 23
+    buildToolsVersion = '23.0.2'
+    sourceCompatibilityVersion = JavaVersion.VERSION_1_7
+    targetCompatibilityVersion = JavaVersion.VERSION_1_7
+}
+
+ext.deps = [
+        supportAnnotations: 'com.android.support:support-annotations:23.1.1',
+        appCompatv7: 'com.android.support:appcompat-v7:23.1.1',
+        dagger: 'com.squareup.dagger:dagger:1.2.2',
+        daggerCompiler: 'com.squareup.dagger:dagger-compiler:1.2.2',
+        androidApt: 'com.neenbedankt.gradle.plugins:android-apt:1.8',
+
+        junit: 'junit:junit:4.12',
+        androidTestRunner: 'com.android.support.test:runner:0.3',
+        androidTestRules: 'com.android.support.test:rules:0.3',
+        espressoCore: 'com.android.support.test.espresso:espresso-core:2.2',
+]
