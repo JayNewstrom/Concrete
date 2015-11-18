@@ -1,1 +1,1 @@
-include ':concrete-sample'
+include ':concrete-sample', ':concrete'
