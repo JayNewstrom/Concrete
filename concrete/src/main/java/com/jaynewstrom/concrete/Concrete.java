@@ -9,8 +9,8 @@ public final class Concrete {
 
     private static final String CONCRETE_SERVICE = Concrete.class.getName();
 
-    public static ConcreteWall foundation(Object daggerModule) {
-        return new ConcreteWall(null, new FoundationConcreteBlock(daggerModule));
+    public static ConcreteWall foundation(Object daggerModule, boolean validate) {
+        return new ConcreteWall(null, new FoundationConcreteBlock(daggerModule), validate);
     }
 
     public static boolean isConcreteService(String name) {

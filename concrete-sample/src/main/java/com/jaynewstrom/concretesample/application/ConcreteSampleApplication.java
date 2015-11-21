@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.jaynewstrom.concrete.Concrete;
 import com.jaynewstrom.concrete.ConcreteWall;
+import com.jaynewstrom.concretesample.BuildConfig;
 import com.squareup.leakcanary.LeakCanary;
 
 public final class ConcreteSampleApplication extends Application {
@@ -13,7 +14,7 @@ public final class ConcreteSampleApplication extends Application {
     @Override public void onCreate() {
         super.onCreate();
         LeakCanary.install(this);
-        foundation = Concrete.foundation(new ApplicationModule(this));
+        foundation = Concrete.foundation(new ApplicationModule(this), BuildConfig.DEBUG);
     }
 
     @Override public Object getSystemService(String name) {
