@@ -52,7 +52,7 @@ ext.deps = [
         androidApt: 'com.neenbedankt.gradle.plugins:android-apt:1.8',
 
         junit: 'junit:junit:4.12',
-        androidTestRunner: 'com.android.support.test:runner:0.3',
-        androidTestRules: 'com.android.support.test:rules:0.3',
-        espressoCore: 'com.android.support.test.espresso:espresso-core:2.2',
+        androidTestRunner: 'com.android.support.test:runner:0.4',
+        androidTestRules: 'com.android.support.test:rules:0.4',
+        espressoCore: 'com.android.support.test.espresso:espresso-core:2.2.1',
 ]
