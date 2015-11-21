@@ -1,5 +1,7 @@
 package com.jaynewstrom.concrete;
 
+import android.content.Context;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -66,5 +68,9 @@ public final class ConcreteWall {
             throw new IllegalStateException("Concrete wall has been destroyed.");
         }
         objectGraph.inject(targetInstance);
+    }
+
+    public Context createContext(Context baseContext) {
+        return new ConcreteWallContext(baseContext, this);
     }
 }
