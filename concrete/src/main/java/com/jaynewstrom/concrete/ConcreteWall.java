@@ -13,15 +13,20 @@ public final class ConcreteWall {
     private final ConcreteBlock block;
     private final Map<String, ConcreteWall> children;
     private final ObjectGraph objectGraph;
+    private final boolean validate;
 
-    ConcreteWall(ConcreteWall parent, ConcreteBlock block) {
+    ConcreteWall(ConcreteWall parent, ConcreteBlock block, boolean validate) {
         this.parent = parent;
         this.block = block;
+        this.validate = validate;
         this.children = new LinkedHashMap<>();
         if (parent == null) {
             objectGraph = ObjectGraph.create(block.module());
         } else {
             objectGraph = parent.objectGraph.plus(block.module());
+        }
+        if (validate) {
+            objectGraph.validate();
         }
     }
 
@@ -38,7 +43,7 @@ public final class ConcreteWall {
     }
 
     private ConcreteWall createAndCacheChild(ConcreteBlock block) {
-        ConcreteWall wall = new ConcreteWall(this, block);
+        ConcreteWall wall = new ConcreteWall(this, block, validate);
         children.put(block.blockName(), wall);
         return wall;
     }
