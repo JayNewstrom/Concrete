@@ -45,6 +45,8 @@ dependencies {
     compile deps.dagger
     apt deps.daggerCompiler
 
+    compile 'com.jakewharton:butterknife:7.0.1'
+
     compile project(':concrete')
 
     androidTestCompile deps.junit
