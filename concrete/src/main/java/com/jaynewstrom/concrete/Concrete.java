@@ -9,11 +9,11 @@ public final class Concrete {
 
     private static final String CONCRETE_SERVICE = Concrete.class.getName();
 
-    public static ConcreteWall foundation(Object daggerModule, boolean validate) {
+    public static ConcreteWall pourFoundation(Object daggerModule, boolean validate) {
         return new ConcreteWall(null, new FoundationConcreteBlock(daggerModule), validate);
     }
 
-    public static boolean isConcreteService(String name) {
+    public static boolean isService(String name) {
         return CONCRETE_SERVICE.equals(name);
     }
 
@@ -23,7 +23,7 @@ public final class Concrete {
         if (scope == null) {
             throw new IllegalArgumentException(format(
                     "Cannot find wall in %s. Make sure your Activity overrides getSystemService() to return its scope if "
-                            + "isConcreteService() is true", context.getClass().getName()
+                            + "Concrete.isService(name) is true", context.getClass().getName()
             ));
         }
         return scope;
@@ -31,5 +31,9 @@ public final class Concrete {
 
     public static void inject(Context context, Object target) {
         findWall(context).inject(target);
+    }
+
+    private Concrete() {
+        throw new AssertionError("No instances.");
     }
 }

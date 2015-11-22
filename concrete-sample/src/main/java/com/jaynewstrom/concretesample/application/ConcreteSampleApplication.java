@@ -14,11 +14,11 @@ public final class ConcreteSampleApplication extends Application {
     @Override public void onCreate() {
         super.onCreate();
         LeakCanary.install(this);
-        foundation = Concrete.foundation(new ApplicationModule(this), BuildConfig.DEBUG);
+        foundation = Concrete.pourFoundation(new ApplicationModule(this), BuildConfig.DEBUG);
     }
 
     @Override public Object getSystemService(String name) {
-        if (Concrete.isConcreteService(name)) {
+        if (Concrete.isService(name)) {
             return foundation;
         }
         return super.getSystemService(name);

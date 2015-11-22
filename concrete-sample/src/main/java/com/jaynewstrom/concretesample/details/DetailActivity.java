@@ -32,7 +32,7 @@ public final class DetailActivity extends BaseActivity {
         listView.setAdapter(new DetailsListAdapter());
     }
 
-    @Override protected ConcreteBlock getConcreteBlock() {
-        return new DetailBlock(getIntent().getStringExtra(INTENT_KEY_TITLE));
+    @Override protected ConcreteBlock concreteBlock() {
+        return new DetailConcreteBlock(getIntent().getStringExtra(INTENT_KEY_TITLE));
     }
 }

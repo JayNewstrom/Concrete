@@ -10,11 +10,11 @@ final class FoundationConcreteBlock implements ConcreteBlock {
         this.module = module;
     }
 
-    @Override public String blockName() {
+    @Override public String name() {
         return FOUNDATION_NAME;
     }
 
-    @Override public Object module() {
+    @Override public Object daggerModule() {
         return module;
     }
 }

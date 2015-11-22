@@ -10,19 +10,19 @@ import com.jaynewstrom.concrete.ConcreteWall;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    private ConcreteWall activityWall;
+    private ConcreteWall activityConcreteWall;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        activityWall = Concrete.findWall(getApplicationContext()).stack(getConcreteBlock());
+        activityConcreteWall = Concrete.findWall(getApplicationContext()).stack(concreteBlock());
         Concrete.inject(this, this);
     }
 
-    protected abstract ConcreteBlock getConcreteBlock();
+    protected abstract ConcreteBlock concreteBlock();
 
     @Override public Object getSystemService(@NonNull String name) {
-        if (Concrete.isConcreteService(name)) {
-            return activityWall;
+        if (Concrete.isService(name)) {
+            return activityConcreteWall;
         }
         return super.getSystemService(name);
     }
@@ -30,7 +30,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override protected void onDestroy() {
         super.onDestroy();
         if (isFinishing()) {
-            activityWall.destroy();
+            activityConcreteWall.destroy();
         }
     }
 }

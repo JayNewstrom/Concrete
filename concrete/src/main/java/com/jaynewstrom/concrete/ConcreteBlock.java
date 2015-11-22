@@ -2,7 +2,7 @@ package com.jaynewstrom.concrete;
 
 public interface ConcreteBlock {
 
-    String blockName();
+    String name();
 
-    Object module();
+    Object daggerModule();
 }

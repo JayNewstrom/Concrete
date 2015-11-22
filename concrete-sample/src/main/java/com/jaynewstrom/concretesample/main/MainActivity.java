@@ -25,8 +25,8 @@ public final class MainActivity extends BaseActivity {
         setTitle(title);
     }
 
-    @Override protected ConcreteBlock getConcreteBlock() {
-        return new MainActivityBlock();
+    @Override protected ConcreteBlock concreteBlock() {
+        return new MainActivityConcreteBlock();
     }
 
     @OnClick({R.id.first_details_button, R.id.second_details_button}) void onDetailsButtonClicked(TextView button) {

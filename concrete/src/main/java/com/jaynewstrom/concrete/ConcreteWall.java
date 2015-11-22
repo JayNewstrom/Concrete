@@ -11,21 +11,21 @@ public final class ConcreteWall {
 
     private boolean destroyed;
 
-    private final ConcreteWall parent;
+    private final ConcreteWall parentWall;
     private final ConcreteBlock block;
-    private final Map<String, ConcreteWall> children;
+    private final Map<String, ConcreteWall> childrenWalls;
     private final ObjectGraph objectGraph;
     private final boolean validate;
 
-    ConcreteWall(ConcreteWall parent, ConcreteBlock block, boolean validate) {
-        this.parent = parent;
+    ConcreteWall(ConcreteWall parentWall, ConcreteBlock block, boolean validate) {
+        this.parentWall = parentWall;
         this.block = block;
         this.validate = validate;
-        this.children = new LinkedHashMap<>();
-        if (parent == null) {
-            objectGraph = ObjectGraph.create(block.module());
+        this.childrenWalls = new LinkedHashMap<>();
+        if (parentWall == null) {
+            objectGraph = ObjectGraph.create(block.daggerModule());
         } else {
-            objectGraph = parent.objectGraph.plus(block.module());
+            objectGraph = parentWall.objectGraph.plus(block.daggerModule());
         }
         if (validate) {
             objectGraph.validate();
@@ -33,34 +33,34 @@ public final class ConcreteWall {
     }
 
     public ConcreteWall stack(ConcreteBlock block) {
-        if (parent != null) {
-            ConcreteWall existingWall = parent.children.get(block.blockName());
+        if (parentWall != null) {
+            ConcreteWall existingWall = parentWall.childrenWalls.get(block.name());
             if (existingWall != null) {
                 return existingWall;
             } else {
-                return createAndCacheChild(block);
+                return createAndCacheChildWall(block);
             }
         }
-        return createAndCacheChild(block);
+        return createAndCacheChildWall(block);
     }
 
-    private ConcreteWall createAndCacheChild(ConcreteBlock block) {
+    private ConcreteWall createAndCacheChildWall(ConcreteBlock block) {
         ConcreteWall wall = new ConcreteWall(this, block, validate);
-        children.put(block.blockName(), wall);
+        childrenWalls.put(block.name(), wall);
         return wall;
     }
 
     public void destroy() {
         if (!destroyed) {
             destroyed = true;
-            if (parent != null) {
-                parent.removeChild(this);
+            if (parentWall != null) {
+                parentWall.removeChildWall(this);
             }
         }
     }
 
-    private void removeChild(ConcreteWall concreteWall) {
-        children.remove(concreteWall.block.blockName());
+    private void removeChildWall(ConcreteWall wall) {
+        childrenWalls.remove(wall.block.name());
     }
 
     void inject(Object targetInstance) {
