@@ -6,18 +6,18 @@ import android.view.LayoutInflater;
 
 final class ConcreteWallContext extends ContextWrapper {
 
-    private final ConcreteWall concreteWall;
+    private final ConcreteWall wall;
 
     private LayoutInflater inflater;
 
-    ConcreteWallContext(Context baseContext, ConcreteWall concreteWall) {
+    ConcreteWallContext(Context baseContext, ConcreteWall wall) {
         super(baseContext);
-        this.concreteWall = concreteWall;
+        this.wall = wall;
     }
 
     @Override public Object getSystemService(String name) {
-        if (Concrete.isConcreteService(name)) {
-            return concreteWall;
+        if (Concrete.isService(name)) {
+            return wall;
         }
         if (LAYOUT_INFLATER_SERVICE.equals(name)) {
             if (inflater == null) {
