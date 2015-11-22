@@ -1,41 +1,35 @@
 package com.jaynewstrom.concretesample.main;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
 
-import com.jaynewstrom.concrete.Concrete;
-import com.jaynewstrom.concrete.ConcreteWall;
+import com.jaynewstrom.concrete.ConcreteBlock;
+import com.jaynewstrom.concretesample.BaseActivity;
 import com.jaynewstrom.concretesample.R;
+import com.jaynewstrom.concretesample.details.DetailActivity;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-public final class MainActivity extends AppCompatActivity {
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+public final class MainActivity extends BaseActivity {
 
     @Inject @Named("title") String title;
-
-    private ConcreteWall activityWall;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        activityWall = Concrete.findWall(getApplicationContext()).stack(new MainActivityBlock());
-        Concrete.inject(this, this);
+        ButterKnife.bind(this);
         setTitle(title);
     }
 
-    @Override public Object getSystemService(@NonNull String name) {
-        if (Concrete.isConcreteService(name)) {
-            return activityWall;
-        }
-        return super.getSystemService(name);
+    @Override protected ConcreteBlock getConcreteBlock() {
+        return new MainActivityBlock();
     }
 
-    @Override protected void onDestroy() {
-        super.onDestroy();
-        if (isFinishing()) {
-            activityWall.destroy();
-        }
+    @OnClick({R.id.first_details_button, R.id.second_details_button}) void onDetailsButtonClicked(TextView button) {
+        startActivity(DetailActivity.buildIntent(this, button.getText().toString()));
     }
 }
