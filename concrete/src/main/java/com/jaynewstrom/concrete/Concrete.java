@@ -7,7 +7,7 @@ import static java.lang.String.format;
 
 public final class Concrete {
 
-    private static final String CONCRETE_SERVICE = Concrete.class.getName();
+    static final String CONCRETE_SERVICE = Concrete.class.getName();
 
     public static ConcreteWall pourFoundation(Object daggerModule, boolean validate) {
         return new ConcreteWall(null, new FoundationConcreteBlock(daggerModule), validate);
