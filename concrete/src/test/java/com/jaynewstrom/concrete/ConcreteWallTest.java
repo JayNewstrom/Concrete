@@ -140,4 +140,36 @@ public final class ConcreteWallTest {
         System.gc();
         assertThat(wallWeakReference.get()).isNull();
     }
+
+    @Test public void whenChildIsDestroyedEnsureTheParentIsStillUsable() {
+        ConcreteWall foundation = Concrete.pourFoundation(new ValidTestModule(), true);
+        ConcreteBlock block = mock(ConcreteBlock.class);
+        when(block.name()).thenReturn("Stacked");
+        when(block.daggerModule()).thenReturn(new ValidTestChildModule());
+        ConcreteWall childWall = foundation.stack(block);
+        childWall.destroy();
+        ValidTestTarget target = new ValidTestTarget();
+        foundation.inject(target);
+        assertThat(target.string).isSameAs("Concrete");
+    }
+
+    @Test public void whenParentIsDestroyedEnsureChildrenAreAlsoDestroyed() {
+        ConcreteWall foundation = Concrete.pourFoundation(new ValidTestModule(), true);
+        ConcreteBlock block = mock(ConcreteBlock.class);
+        when(block.name()).thenReturn("Stacked");
+        when(block.daggerModule()).thenReturn(new ValidTestChildModule());
+        ConcreteBlock blockAgain = mock(ConcreteBlock.class);
+        ConcreteWall childWall = foundation.stack(block);
+        when(blockAgain.name()).thenReturn("StackedAgain");
+        when(blockAgain.daggerModule()).thenReturn(new ValidTestChildModule());
+        foundation.stack(blockAgain);
+        foundation.destroy();
+        try {
+            ValidTestChildTarget childTarget = new ValidTestChildTarget();
+            childWall.inject(childTarget);
+            fail();
+        } catch (IllegalStateException exception) {
+            assertThat(exception).hasMessage("Concrete wall has been destroyed.");
+        }
+    }
 }

@@ -2,6 +2,7 @@ package com.jaynewstrom.concrete;
 
 import android.content.Context;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -50,6 +51,13 @@ public final class ConcreteWall {
     public void destroy() {
         if (!destroyed) {
             destroyed = true;
+            if (childrenWalls.size() > 0) {
+                // We need to copy the collection, so we can iterate over all values and destroy them.
+                // Calling destroy on the child, will remove it from our model, which is why we need the copy.
+                for (ConcreteWall child : new ArrayList<>(childrenWalls.values())) {
+                    child.destroy();
+                }
+            }
             if (parentWall != null) {
                 parentWall.removeChildWall(this);
             }
