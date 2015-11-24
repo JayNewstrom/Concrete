@@ -33,15 +33,12 @@ public final class ConcreteWall {
     }
 
     public ConcreteWall stack(ConcreteBlock block) {
-        if (parentWall != null) {
-            ConcreteWall existingWall = parentWall.childrenWalls.get(block.name());
-            if (existingWall != null) {
-                return existingWall;
-            } else {
-                return createAndCacheChildWall(block);
-            }
+        ConcreteWall existingWall = childrenWalls.get(block.name());
+        if (existingWall != null) {
+            return existingWall;
+        } else {
+            return createAndCacheChildWall(block);
         }
-        return createAndCacheChildWall(block);
     }
 
     private ConcreteWall createAndCacheChildWall(ConcreteBlock block) {
