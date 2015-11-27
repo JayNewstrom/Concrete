@@ -1,0 +1,42 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath deps.androidApt
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'android-apt'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    compileOptions {
+        sourceCompatibility rootProject.ext.sourceCompatibilityVersion
+        targetCompatibility rootProject.ext.targetCompatibilityVersion
+    }
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName '1.0'
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+        testApplicationId 'com.jaynewstrom.concretetesting.androidTest'
+    }
+}
+
+dependencies {
+    compile project(':concrete')
+    compile deps.dagger
+
+    androidTestApt deps.daggerCompiler
+    androidTestCompile deps.junit
+    androidTestCompile deps.fest
+    androidTestCompile deps.androidTestRunner
+    androidTestCompile deps.androidTestRules
+    androidTestCompile deps.espressoCore
+}

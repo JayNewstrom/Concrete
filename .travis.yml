@@ -1,5 +1,9 @@
 language: android
 
+env:
+  global:
+    - ADB_INSTALL_TIMEOUT=4 # minutes (2 minutes by default)
+
 android:
   components:
     - tools
@@ -12,12 +16,12 @@ android:
     - extra-google-m2repository
 
 before_script:
-  - echo no | android create avd --force -n test -t android-18 --abi armeabi-v7a
+  - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a
   - emulator -avd test -no-skin -no-audio -no-window &
   - android-wait-for-emulator
 
 script:
-  - ./gradlew build checkstyle
+  - ./gradlew build checkstyle test
   - adb shell input keyevent 82
   - ./gradlew connectedCheck
 

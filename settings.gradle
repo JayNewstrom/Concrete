@@ -1,1 +1,1 @@
-include ':concrete-sample', ':concrete'
+include ':concrete-sample', ':concrete', ':concrete-testing'
