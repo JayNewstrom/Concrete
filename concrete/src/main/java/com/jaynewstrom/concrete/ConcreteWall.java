@@ -33,6 +33,12 @@ public final class ConcreteWall {
         }
     }
 
+    /**
+     * If a wall identified by the blocks name exists as a child, it will be returned.
+     * If it doesn't exist it will be created, cached as a child, then returned.
+     * <p/>
+     * The returned wall will have a superset of the behavior of the wall the block was stacked upon.
+     */
     public ConcreteWall stack(ConcreteBlock block) {
         ConcreteWall existingWall = childrenWalls.get(block.name());
         if (existingWall != null) {
@@ -48,6 +54,9 @@ public final class ConcreteWall {
         return wall;
     }
 
+    /**
+     * Marks this wall as destroyed. Destroying a wall destroys all of it's children, and removes it from its parent.
+     */
     public void destroy() {
         if (!destroyed) {
             destroyed = true;
@@ -75,6 +84,9 @@ public final class ConcreteWall {
         objectGraph.inject(targetInstance);
     }
 
+    /**
+     * Creates a new Context based on the given base context and this wall.
+     */
     public Context createContext(Context baseContext) {
         return new ConcreteWallContext(baseContext, this);
     }
