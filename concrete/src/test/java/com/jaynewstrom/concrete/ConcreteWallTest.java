@@ -3,7 +3,9 @@ package com.jaynewstrom.concrete;
 import org.junit.Test;
 
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -81,7 +83,7 @@ public final class ConcreteWallTest {
         ConcreteWall concreteWall = Concrete.pourFoundation(new ValidTestModule(), true);
         ValidTestTarget target = new ValidTestTarget();
         concreteWall.inject(target);
-        assertThat(target.string).isSameAs("Concrete");
+        assertThat(target.string).isEqualTo("Concrete");
     }
 
     @Test public void stackedWallInjectSetsVariable() {
@@ -92,7 +94,7 @@ public final class ConcreteWallTest {
         ConcreteWall childWall = foundation.stack(block);
         ValidTestChildTarget childTarget = new ValidTestChildTarget();
         childWall.inject(childTarget);
-        assertThat(childTarget.childString).matches("Concrete-Child");
+        assertThat(childTarget.childString).isEqualTo("Concrete-Child");
     }
 
     @Module(injects = ValidTestChildTarget.class, addsTo = ValidTestModule.class) static final class ValidTestChildModule {
@@ -150,7 +152,7 @@ public final class ConcreteWallTest {
         childWall.destroy();
         ValidTestTarget target = new ValidTestTarget();
         foundation.inject(target);
-        assertThat(target.string).isSameAs("Concrete");
+        assertThat(target.string).isEqualTo("Concrete");
     }
 
     @Test public void whenParentIsDestroyedEnsureChildrenAreAlsoDestroyed() {
@@ -171,5 +173,56 @@ public final class ConcreteWallTest {
         } catch (IllegalStateException exception) {
             assertThat(exception).hasMessage("Concrete wall has been destroyed.");
         }
+    }
+
+    @Test public void ensureFoundationPouredWithTwoModulesProvidesDependenciesOfBoth() {
+        List<Object> modules = Arrays.asList(new ValidTestModule(), new ValidSecondaryTestModule());
+        ConcreteWall concreteWall = Concrete.pourFoundation(modules, true);
+        ValidSecondaryTestTarget target = new ValidSecondaryTestTarget();
+        concreteWall.inject(target);
+        assertThat(target.string).isEqualTo("Concrete");
+        assertThat(target.date).isNotNull();
+    }
+
+    @Module(injects = ValidSecondaryTestTarget.class, addsTo = ValidTestModule.class)
+    static final class ValidSecondaryTestModule {
+
+        @Provides Date provideDate() {
+            return new Date();
+        }
+    }
+
+    static final class ValidSecondaryTestTarget {
+
+        @Inject String string;
+        @Inject Date date;
+    }
+
+    @Test public void ensureWallStackedWithTwoModulesProvidesDependenciesOfBoth() {
+        ConcreteWall foundation = Concrete.pourFoundation(new ValidTestModule(), true);
+        ConcreteBlock block = mock(ConcreteBlock.class);
+        when(block.name()).thenReturn("Stacked");
+        when(block.daggerModule()).thenReturn(Arrays.asList(new ValidTestChildModule(), new ValidSecondaryChildTestModule()));
+        ConcreteWall concreteWall = foundation.stack(block);
+        ValidSecondaryChildTestTarget target = new ValidSecondaryChildTestTarget();
+        concreteWall.inject(target);
+        assertThat(target.string).isEqualTo("Concrete");
+        assertThat(target.stringChild).isEqualTo("Concrete-Child");
+        assertThat(target.date).isNotNull();
+    }
+
+    @Module(injects = ValidSecondaryChildTestTarget.class, addsTo = ValidTestChildModule.class)
+    static final class ValidSecondaryChildTestModule {
+
+        @Provides Date provideDate() {
+            return new Date();
+        }
+    }
+
+    static final class ValidSecondaryChildTestTarget {
+
+        @Inject String string;
+        @Inject @Named("child") String stringChild;
+        @Inject Date date;
     }
 }

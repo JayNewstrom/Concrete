@@ -3,6 +3,7 @@ package com.jaynewstrom.concrete;
 import android.content.Context;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -24,12 +25,30 @@ public final class ConcreteWall {
         this.validate = validate;
         this.childrenWalls = new LinkedHashMap<>();
         if (parentWall == null) {
-            objectGraph = ObjectGraph.create(block.daggerModule());
+            objectGraph = createObjectGraph(block.daggerModule());
         } else {
-            objectGraph = parentWall.objectGraph.plus(block.daggerModule());
+            objectGraph = plusObjectGraph(parentWall.objectGraph, block.daggerModule());
         }
         if (validate) {
             objectGraph.validate();
+        }
+    }
+
+    private static ObjectGraph createObjectGraph(Object module) {
+        if (module instanceof Collection) {
+            Collection c = (Collection) module;
+            return ObjectGraph.create(c.toArray(new Object[c.size()]));
+        } else {
+            return ObjectGraph.create(module);
+        }
+    }
+
+    private static ObjectGraph plusObjectGraph(ObjectGraph parentObjectGraph, Object module) {
+        if (module instanceof Collection) {
+            Collection c = (Collection) module;
+            return parentObjectGraph.plus(c.toArray(new Object[c.size()]));
+        } else {
+            return parentObjectGraph.plus(module);
         }
     }
 
