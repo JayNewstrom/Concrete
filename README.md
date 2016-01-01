@@ -27,6 +27,14 @@ This is different from Mortar in that there is no notion of listeners for the ac
 
 This is similar to u2020's `Injector` but promotes the idea of having an `ObjectGraph` outlive the activity lifecycle.
 
+Setup
+------------
+```groovy
+dependencies {
+    compile 'com.jaynewstrom:concrete:0.9.0'
+}
+```
+
 License
 -------
 
