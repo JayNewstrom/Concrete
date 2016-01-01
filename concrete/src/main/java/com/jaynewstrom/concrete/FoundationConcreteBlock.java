@@ -2,7 +2,7 @@ package com.jaynewstrom.concrete;
 
 final class FoundationConcreteBlock implements ConcreteBlock {
 
-    static final String FOUNDATION_NAME = "Foundation";
+    private static final String FOUNDATION_NAME = "Foundation";
 
     private final Object module;
 

@@ -59,7 +59,7 @@ public final class ConcreteTest {
     }
 
     @SuppressWarnings("ResourceType") @SuppressLint("WrongConstant")
-    static ConcreteWall pourFoundationWithMockContext(Context contextToMock, Object daggerModule) {
+    private static ConcreteWall pourFoundationWithMockContext(Context contextToMock, Object daggerModule) {
         ConcreteWall foundation = Concrete.pourFoundation(daggerModule, true);
         when(contextToMock.getSystemService(Concrete.CONCRETE_SERVICE)).thenReturn(foundation);
         return foundation;
