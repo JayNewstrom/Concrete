@@ -1,14 +1,4 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath deps.androidApt
-    }
-}
-
 apply plugin: 'com.android.library'
-apply plugin: 'android-apt'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -33,7 +23,7 @@ dependencies {
     compile project(':concrete')
     compile deps.dagger
 
-    androidTestApt deps.daggerCompiler
+    androidTestAnnotationProcessor deps.daggerCompiler
     androidTestCompile deps.junit
     androidTestCompile deps.fest
     androidTestCompile deps.androidTestRunner

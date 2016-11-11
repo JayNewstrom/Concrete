@@ -9,7 +9,7 @@ import com.jaynewstrom.concrete.ConcreteBlock;
 import com.jaynewstrom.concretesample.BaseActivity;
 import com.jaynewstrom.concretesample.R;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public final class DetailActivity extends BaseActivity {
@@ -22,7 +22,7 @@ public final class DetailActivity extends BaseActivity {
         return intent;
     }
 
-    @Bind(R.id.list_view) ListView listView;
+    @BindView(R.id.list_view) ListView listView;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
