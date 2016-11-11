@@ -11,15 +11,15 @@ import com.jaynewstrom.concretesample.R;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 final class DetailsListItemView extends LinearLayout {
 
     @Inject @Named("detailsTitle") String detailsTitle;
 
-    @Bind(R.id.tv_position) TextView positionTextView;
-    @Bind(R.id.tv_title) TextView titleTextView;
+    @BindView(R.id.tv_position) TextView positionTextView;
+    @BindView(R.id.tv_title) TextView titleTextView;
 
     DetailsListItemView(Context context) {
         super(context);
