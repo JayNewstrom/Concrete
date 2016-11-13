@@ -1,5 +1,7 @@
 Concrete
-=========
+========
+
+Concrete creates and caches Dagger 2 components in a way that make sense in Android applications. 
 
 What problems does Concrete solve?
 -------
@@ -31,7 +33,7 @@ Setup
 ------------
 ```groovy
 dependencies {
-    compile 'com.jaynewstrom:concrete:0.9.0'
+    compile 'com.jaynewstrom:concrete:0.10.0'
 }
 ```
 
