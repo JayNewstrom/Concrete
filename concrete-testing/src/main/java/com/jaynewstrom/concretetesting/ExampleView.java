@@ -16,6 +16,6 @@ public final class ExampleView extends View {
 
     public ExampleView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        Concrete.inject(context, this);
+        Concrete.<ContextChildTestComponent>getComponent(context).inject(this);
     }
 }

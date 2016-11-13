@@ -22,8 +22,8 @@ android {
 dependencies {
     compile project(':concrete')
     compile deps.dagger
+    annotationProcessor deps.daggerCompiler
 
-    androidTestAnnotationProcessor deps.daggerCompiler
     androidTestCompile deps.junit
     androidTestCompile deps.fest
     androidTestCompile deps.androidTestRunner

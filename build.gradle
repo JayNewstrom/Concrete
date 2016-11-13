@@ -47,8 +47,8 @@ ext {
 ext.deps = [
         supportAnnotations: 'com.android.support:support-annotations:25.0.0',
         appCompatv7: 'com.android.support:appcompat-v7:25.0.0',
-        dagger: 'com.squareup.dagger:dagger:1.2.2',
-        daggerCompiler: 'com.squareup.dagger:dagger-compiler:1.2.2',
+        dagger: 'com.google.dagger:dagger:2.7',
+        daggerCompiler: 'com.google.dagger:dagger-compiler:2.7',
 
         junit: 'junit:junit:4.12',
         fest: 'org.easytesting:fest-assert-core:2.0M10',

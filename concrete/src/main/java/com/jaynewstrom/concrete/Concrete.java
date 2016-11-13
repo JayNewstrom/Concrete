@@ -11,11 +11,10 @@ public final class Concrete {
 
     /**
      * This creates the foundational wall.
-     * The validate parameter will call ObjectGraph.validate on the root object graph, as well as every object graph that is plus'd
-     * when stacking blocks to create walls.
      */
-    public static ConcreteWall pourFoundation(Object daggerModule, boolean validate) {
-        return new ConcreteWall(null, new FoundationConcreteBlock(daggerModule), validate);
+    public static <C> ConcreteWall<C> pourFoundation(C component) {
+        Preconditions.checkNotNull(component, "component == null");
+        return new ConcreteWall<>(null, new FoundationConcreteBlock<>(component));
     }
 
     /**
@@ -32,9 +31,10 @@ public final class Concrete {
      *
      * @throws IllegalArgumentException if context.getSystemService isn't overridden, returning the concrete wall.
      */
-    public static ConcreteWall findWall(Context context) {
+    public static <T extends ConcreteWall<?>> T findWall(Context context) {
+        //noinspection unchecked
         @SuppressWarnings("ResourceType") @SuppressLint("WrongConstant")
-        ConcreteWall wall = (ConcreteWall) context.getSystemService(CONCRETE_SERVICE);
+        T wall = (T) context.getSystemService(CONCRETE_SERVICE);
         if (wall == null) {
             throw new IllegalArgumentException(format(
                     "Cannot find wall in %s. Make sure your Activity/Application overrides getSystemService() to return its wall if "
@@ -45,12 +45,12 @@ public final class Concrete {
     }
 
     /**
-     * Calling inject will find the wall with the given context, and use the walls object graph to inject the target.
+     * Calling getComponent will find the wall with the given context, and return the component associated with the wall.
      *
      * @throws IllegalStateException if the wall associated with the context is destroyed.
      */
-    public static void inject(Context context, Object target) {
-        findWall(context).inject(target);
+    public static <C> C getComponent(Context context) {
+        return Concrete.<ConcreteWall<C>>findWall(context).getComponent();
     }
 
     private Concrete() {

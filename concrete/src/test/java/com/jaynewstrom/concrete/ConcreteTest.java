@@ -8,6 +8,7 @@ import org.junit.Test;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
 
@@ -30,37 +31,45 @@ public final class ConcreteTest {
 
     @Test public void findWallReturnsFoundation() {
         Context context = mock(Context.class);
-        ConcreteWall foundation = pourFoundationWithMockContext(context, new FindWallTestModule());
-        assertThat(Concrete.findWall(context)).isSameAs(foundation);
+        ConcreteWall<FindWallTestComponent> foundation = pourFoundation(context, DaggerConcreteTest_FindWallTestComponent.create());
+        assertThat(Concrete.<ConcreteWall<FindWallTestComponent>>findWall(context)).isSameAs(foundation);
     }
 
-    @Module static final class FindWallTestModule {
+    @Component(modules = FindWallTestModule.class)
+    interface FindWallTestComponent {
+    }
 
+    @Module
+    static final class FindWallTestModule {
     }
 
     @Test public void injectSetsFieldsInInjectedObject() {
         Context context = mock(Context.class);
-        pourFoundationWithMockContext(context, new InjectTestModule());
+        pourFoundation(context, DaggerConcreteTest_InjectTestComponent.create());
         InjectTest injectTest = new InjectTest();
-        Concrete.inject(context, injectTest);
+        Concrete.<InjectTestComponent>getComponent(context).inject(injectTest);
         assertThat(injectTest.injectedString).isEqualTo("hello world");
     }
 
-    @Module(injects = InjectTest.class) static final class InjectTestModule {
+    @Component(modules = InjectTestModule.class)
+    interface InjectTestComponent {
+        void inject(InjectTest injectTest);
+    }
 
+    @Module
+    static final class InjectTestModule {
         @Provides @Named("injectedString") String provideString() {
             return "hello world";
         }
     }
 
     static final class InjectTest {
-
         @Inject @Named("injectedString") String injectedString;
     }
 
     @SuppressWarnings("ResourceType") @SuppressLint("WrongConstant")
-    private static ConcreteWall pourFoundationWithMockContext(Context contextToMock, Object daggerModule) {
-        ConcreteWall foundation = Concrete.pourFoundation(daggerModule, true);
+    private static <C> ConcreteWall<C> pourFoundation(Context contextToMock, C component) {
+        ConcreteWall<C> foundation = Concrete.pourFoundation(component);
         when(contextToMock.getSystemService(Concrete.CONCRETE_SERVICE)).thenReturn(foundation);
         return foundation;
     }

@@ -1,12 +1,15 @@
 package com.jaynewstrom.concretesample.details;
 
 import com.jaynewstrom.concrete.ConcreteBlock;
+import com.jaynewstrom.concretesample.application.ApplicationComponent;
 
-final class DetailConcreteBlock implements ConcreteBlock {
+final class DetailConcreteBlock implements ConcreteBlock<DetailComponent> {
 
+    private final ApplicationComponent applicationComponent;
     private final String detailsTitle;
 
-    public DetailConcreteBlock(String detailsTitle) {
+    DetailConcreteBlock(ApplicationComponent applicationComponent, String detailsTitle) {
+        this.applicationComponent = applicationComponent;
         this.detailsTitle = detailsTitle;
     }
 
@@ -16,7 +19,10 @@ final class DetailConcreteBlock implements ConcreteBlock {
         return getClass().getName() + detailsTitle;
     }
 
-    @Override public Object daggerModule() {
-        return new DetailModule(detailsTitle);
+    @Override public DetailComponent createComponent() {
+        return DaggerDetailComponent.builder()
+                .applicationComponent(applicationComponent)
+                .detailModule(new DetailModule(detailsTitle))
+                .build();
     }
 }

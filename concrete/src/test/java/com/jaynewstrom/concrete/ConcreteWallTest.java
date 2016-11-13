@@ -3,226 +3,156 @@ package com.jaynewstrom.concrete;
 import org.junit.Test;
 
 import java.lang.ref.WeakReference;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public final class ConcreteWallTest {
 
-    @Test public void ensureInvalidGraphFailsValidationWhenCreatingWall() {
-        try {
-            Concrete.pourFoundation(new InvalidFoundationModule(), true);
-            fail();
-        } catch (IllegalStateException exception) {
-            assertThat(exception).hasMessageStartingWith("Errors creating object graph");
-        }
+    private static ConcreteWall<TestComponent> testComponentWall() {
+        return Concrete.pourFoundation(DaggerConcreteWallTest_TestComponent.create());
     }
 
-    @Module(complete = false, injects = InvalidModuleTarget.class) static final class InvalidFoundationModule {
-
-        @Provides String provideUnusedString(Date thisDateIsNotProvidedAnywhere) {
-            return "This will never run" + thisDateIsNotProvidedAnywhere;
-        }
-    }
-
-    @Test public void ensureInvalidGraphDoesNotFailUntilUsedToInject() {
-        ConcreteWall concreteWall = Concrete.pourFoundation(new InvalidFoundationModule(), false);
-        try {
-            InvalidModuleTarget target = new InvalidModuleTarget();
-            concreteWall.inject(target);
-            fail();
-        } catch (IllegalStateException exception) {
-            assertThat(exception).hasMessageStartingWith("Errors creating object graph");
-        }
-    }
-
-    static final class InvalidModuleTarget {
-
-        @Inject String string;
-    }
-
-    @Test public void ensureDestroyedWallThrowsWhenUsedToInject() {
-        ConcreteWall concreteWall = Concrete.pourFoundation(new ValidTestModule(), true);
+    @Test public void ensureDestroyedWallThrowsWhenCallingGetComponent() {
+        ConcreteWall<TestComponent> concreteWall = testComponentWall();
         concreteWall.destroy();
-        ValidTestTarget target = new ValidTestTarget();
         try {
-            concreteWall.inject(target);
+            concreteWall.getComponent();
             fail();
         } catch (IllegalStateException exception) {
             assertThat(exception).hasMessage("Concrete wall has been destroyed.");
         }
     }
 
-    @Module(injects = ValidTestTarget.class)
-    static final class ValidTestModule {
+    @Component(modules = TestModule.class)
+    interface TestComponent {
+        void inject(TestTarget target);
+
+        String getString();
+    }
+
+    @Module
+    static final class TestModule {
 
         @Provides String provideString() {
             return "Concrete";
         }
     }
 
-    static final class ValidTestTarget {
+    static final class TestTarget {
 
         @Inject String string;
     }
 
     @Test public void ensureWallInjectSetsVariable() {
-        ConcreteWall concreteWall = Concrete.pourFoundation(new ValidTestModule(), true);
-        ValidTestTarget target = new ValidTestTarget();
-        concreteWall.inject(target);
+        ConcreteWall<TestComponent> concreteWall = testComponentWall();
+        TestTarget target = new TestTarget();
+        concreteWall.getComponent().inject(target);
         assertThat(target.string).isEqualTo("Concrete");
     }
 
     @Test public void stackedWallInjectSetsVariable() {
-        ConcreteWall foundation = Concrete.pourFoundation(new ValidTestModule(), true);
-        ConcreteBlock block = mock(ConcreteBlock.class);
-        when(block.name()).thenReturn("Stacked");
-        when(block.daggerModule()).thenReturn(new ValidTestChildModule());
-        ConcreteWall childWall = foundation.stack(block);
-        ValidTestChildTarget childTarget = new ValidTestChildTarget();
-        childWall.inject(childTarget);
+        ConcreteWall<TestComponent> foundation = testComponentWall();
+        ConcreteBlock<TestChildComponent> block = new TestChildBlock(foundation.getComponent());
+        ConcreteWall<TestChildComponent> childWall = foundation.stack(block);
+        TestChildTarget childTarget = new TestChildTarget();
+        childWall.getComponent().inject(childTarget);
         assertThat(childTarget.childString).isEqualTo("Concrete-Child");
     }
 
-    @Module(injects = ValidTestChildTarget.class, addsTo = ValidTestModule.class) static final class ValidTestChildModule {
+    static class TestChildBlock implements ConcreteBlock<TestChildComponent> {
+
+        private final TestComponent testComponent;
+
+        TestChildBlock(TestComponent testComponent) {
+            this.testComponent = testComponent;
+        }
+
+        @Override public String name() {
+            return "Stacked";
+        }
+
+        @Override public TestChildComponent createComponent() {
+            return DaggerConcreteWallTest_TestChildComponent.builder().testComponent(testComponent).build();
+        }
+    }
+
+    @Component(dependencies = TestComponent.class, modules = TestChildModule.class)
+    interface TestChildComponent {
+        void inject(TestChildTarget target);
+    }
+
+    @Module
+    static final class TestChildModule {
 
         @Provides @Named("child") String provideChildString(String parent) {
             return parent + "-Child";
         }
     }
 
-    static final class ValidTestChildTarget {
+    static final class TestChildTarget {
 
         @Inject @Named("child") String childString;
     }
 
     @Test public void ensureStackCalledWithTheSameBlockNameReturnsSameWall() {
-        ConcreteWall foundation = Concrete.pourFoundation(new ValidTestModule(), true);
-        ConcreteBlock block = mock(ConcreteBlock.class);
-        when(block.name()).thenReturn("Stacked");
-        when(block.daggerModule()).thenReturn(new ValidTestChildModule());
-        ConcreteWall childWall = foundation.stack(block);
+        ConcreteWall<TestComponent> foundation = testComponentWall();
+        ConcreteBlock<TestChildComponent> block = spy(new TestChildBlock(foundation.getComponent()));
+        ConcreteWall<TestChildComponent> childWall = foundation.stack(block);
         assertThat(foundation.stack(block)).isSameAs(childWall);
-        verify(block, times(1)).daggerModule();
+        verify(block, times(1)).createComponent();
     }
 
     @Test public void whenStackedThenDestroyedThenStackedAgainEnsureWallIsRecreated() {
-        ConcreteWall foundation = Concrete.pourFoundation(new ValidTestModule(), true);
-        ConcreteBlock block = mock(ConcreteBlock.class);
-        when(block.name()).thenReturn("Stacked");
-        when(block.daggerModule()).thenReturn(new ValidTestChildModule());
-        ConcreteWall childWall = foundation.stack(block);
+        ConcreteWall<TestComponent> foundation = testComponentWall();
+        ConcreteBlock<TestChildComponent> block = spy(new TestChildBlock(foundation.getComponent()));
+        ConcreteWall<TestChildComponent> childWall = foundation.stack(block);
         assertThat(foundation.stack(block)).isSameAs(childWall);
-        verify(block, times(1)).daggerModule();
+        verify(block, times(1)).createComponent();
         childWall.destroy();
         assertThat(foundation.stack(block)).isNotSameAs(childWall);
-        verify(block, times(2)).daggerModule();
+        verify(block, times(2)).createComponent();
     }
 
     @Test public void whenWallIsDestroyedEnsureItCanBeGarbageCollected() {
-        ConcreteWall foundation = Concrete.pourFoundation(new ValidTestModule(), true);
-        ConcreteBlock block = mock(ConcreteBlock.class);
-        when(block.name()).thenReturn("Stacked");
-        when(block.daggerModule()).thenReturn(new ValidTestChildModule());
-        WeakReference<ConcreteWall> wallWeakReference = new WeakReference<>(foundation.stack(block));
+        ConcreteWall<TestComponent> foundation = testComponentWall();
+        ConcreteBlock<TestChildComponent> block = spy(new TestChildBlock(foundation.getComponent()));
+        WeakReference<ConcreteWall<TestChildComponent>> wallWeakReference = new WeakReference<>(foundation.stack(block));
         wallWeakReference.get().destroy();
         System.gc();
         assertThat(wallWeakReference.get()).isNull();
     }
 
     @Test public void whenChildIsDestroyedEnsureTheParentIsStillUsable() {
-        ConcreteWall foundation = Concrete.pourFoundation(new ValidTestModule(), true);
-        ConcreteBlock block = mock(ConcreteBlock.class);
-        when(block.name()).thenReturn("Stacked");
-        when(block.daggerModule()).thenReturn(new ValidTestChildModule());
-        ConcreteWall childWall = foundation.stack(block);
+        ConcreteWall<TestComponent> foundation = testComponentWall();
+        ConcreteBlock<TestChildComponent> block = spy(new TestChildBlock(foundation.getComponent()));
+        ConcreteWall<TestChildComponent> childWall = foundation.stack(block);
         childWall.destroy();
-        ValidTestTarget target = new ValidTestTarget();
-        foundation.inject(target);
+        TestTarget target = new TestTarget();
+        foundation.getComponent().inject(target);
         assertThat(target.string).isEqualTo("Concrete");
     }
 
     @Test public void whenParentIsDestroyedEnsureChildrenAreAlsoDestroyed() {
-        ConcreteWall foundation = Concrete.pourFoundation(new ValidTestModule(), true);
-        ConcreteBlock block = mock(ConcreteBlock.class);
-        when(block.name()).thenReturn("Stacked");
-        when(block.daggerModule()).thenReturn(new ValidTestChildModule());
-        ConcreteBlock blockAgain = mock(ConcreteBlock.class);
-        ConcreteWall childWall = foundation.stack(block);
-        when(blockAgain.name()).thenReturn("StackedAgain");
-        when(blockAgain.daggerModule()).thenReturn(new ValidTestChildModule());
-        foundation.stack(blockAgain);
+        ConcreteWall<TestComponent> foundation = testComponentWall();
+        ConcreteBlock<TestChildComponent> block = spy(new TestChildBlock(foundation.getComponent()));
+        ConcreteWall<TestChildComponent> childWall = foundation.stack(block);
         foundation.destroy();
         try {
-            ValidTestChildTarget childTarget = new ValidTestChildTarget();
-            childWall.inject(childTarget);
+            childWall.getComponent();
             fail();
         } catch (IllegalStateException exception) {
             assertThat(exception).hasMessage("Concrete wall has been destroyed.");
         }
-    }
-
-    @Test public void ensureFoundationPouredWithTwoModulesProvidesDependenciesOfBoth() {
-        List<Object> modules = Arrays.asList(new ValidTestModule(), new ValidSecondaryTestModule());
-        ConcreteWall concreteWall = Concrete.pourFoundation(modules, true);
-        ValidSecondaryTestTarget target = new ValidSecondaryTestTarget();
-        concreteWall.inject(target);
-        assertThat(target.string).isEqualTo("Concrete");
-        assertThat(target.date).isNotNull();
-    }
-
-    @Module(injects = ValidSecondaryTestTarget.class, addsTo = ValidTestModule.class)
-    static final class ValidSecondaryTestModule {
-
-        @Provides Date provideDate() {
-            return new Date();
-        }
-    }
-
-    static final class ValidSecondaryTestTarget {
-
-        @Inject String string;
-        @Inject Date date;
-    }
-
-    @Test public void ensureWallStackedWithTwoModulesProvidesDependenciesOfBoth() {
-        ConcreteWall foundation = Concrete.pourFoundation(new ValidTestModule(), true);
-        ConcreteBlock block = mock(ConcreteBlock.class);
-        when(block.name()).thenReturn("Stacked");
-        when(block.daggerModule()).thenReturn(Arrays.asList(new ValidTestChildModule(), new ValidSecondaryChildTestModule()));
-        ConcreteWall concreteWall = foundation.stack(block);
-        ValidSecondaryChildTestTarget target = new ValidSecondaryChildTestTarget();
-        concreteWall.inject(target);
-        assertThat(target.string).isEqualTo("Concrete");
-        assertThat(target.stringChild).isEqualTo("Concrete-Child");
-        assertThat(target.date).isNotNull();
-    }
-
-    @Module(injects = ValidSecondaryChildTestTarget.class, addsTo = ValidTestChildModule.class)
-    static final class ValidSecondaryChildTestModule {
-
-        @Provides Date provideDate() {
-            return new Date();
-        }
-    }
-
-    static final class ValidSecondaryChildTestTarget {
-
-        @Inject String string;
-        @Inject @Named("child") String stringChild;
-        @Inject Date date;
     }
 }

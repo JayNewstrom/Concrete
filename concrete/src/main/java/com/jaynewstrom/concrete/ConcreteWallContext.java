@@ -4,14 +4,14 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.view.LayoutInflater;
 
-final class ConcreteWallContext extends ContextWrapper {
+final class ConcreteWallContext<C> extends ContextWrapper {
 
-    private final ConcreteWall wall;
+    private final ConcreteWall<C> wall;
 
     private LayoutInflater inflater;
 
-    ConcreteWallContext(Context baseContext, ConcreteWall wall) {
-        super(baseContext);
+    ConcreteWallContext(Context baseContext, ConcreteWall<C> wall) {
+        super(Preconditions.checkNotNull(baseContext, "baseContext == null"));
         this.wall = wall;
     }
 
