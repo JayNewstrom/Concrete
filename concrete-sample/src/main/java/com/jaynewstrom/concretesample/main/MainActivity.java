@@ -3,9 +3,9 @@ package com.jaynewstrom.concretesample.main;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.jaynewstrom.concrete.ConcreteBlock;
 import com.jaynewstrom.concretesample.BaseActivity;
 import com.jaynewstrom.concretesample.R;
+import com.jaynewstrom.concretesample.application.ApplicationComponent;
 import com.jaynewstrom.concretesample.details.DetailActivity;
 
 import javax.inject.Inject;
@@ -14,7 +14,7 @@ import javax.inject.Named;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public final class MainActivity extends BaseActivity {
+public final class MainActivity extends BaseActivity<MainActivityComponent> {
 
     @Inject @Named("title") String title;
 
@@ -25,8 +25,12 @@ public final class MainActivity extends BaseActivity {
         setTitle(title);
     }
 
-    @Override protected ConcreteBlock concreteBlock() {
-        return new MainActivityConcreteBlock();
+    @Override protected MainActivityConcreteBlock concreteBlock(ApplicationComponent applicationComponent) {
+        return new MainActivityConcreteBlock(applicationComponent);
+    }
+
+    @Override protected void performInject(MainActivityComponent component) {
+        component.inject(this);
     }
 
     @OnClick({R.id.first_details_button, R.id.second_details_button}) void onDetailsButtonClicked(TextView button) {

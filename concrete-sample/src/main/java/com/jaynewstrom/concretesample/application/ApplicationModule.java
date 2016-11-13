@@ -6,10 +6,8 @@ import android.content.Context;
 import dagger.Module;
 import dagger.Provides;
 
-@Module(
-        library = true
-)
-public final class ApplicationModule {
+@Module
+final class ApplicationModule {
 
     private final Application application;
 

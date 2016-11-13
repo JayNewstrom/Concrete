@@ -1,20 +1,20 @@
 package com.jaynewstrom.concrete;
 
-final class FoundationConcreteBlock implements ConcreteBlock {
+final class FoundationConcreteBlock<C> implements ConcreteBlock<C> {
 
     private static final String FOUNDATION_NAME = "Foundation";
 
-    private final Object module;
+    private final C component;
 
-    FoundationConcreteBlock(Object module) {
-        this.module = module;
+    FoundationConcreteBlock(C component) {
+        this.component = component;
     }
 
     @Override public String name() {
         return FOUNDATION_NAME;
     }
 
-    @Override public Object daggerModule() {
-        return module;
+    @Override public C createComponent() {
+        return component;
     }
 }

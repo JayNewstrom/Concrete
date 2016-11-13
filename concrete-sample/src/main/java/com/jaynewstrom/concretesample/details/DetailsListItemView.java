@@ -23,7 +23,7 @@ final class DetailsListItemView extends LinearLayout {
 
     DetailsListItemView(Context context) {
         super(context);
-        Concrete.inject(context, this);
+        Concrete.<DetailComponent>getComponent(context).inject(this);
         LayoutInflater.from(context).inflate(R.layout.details_list_item, this, true);
         ButterKnife.bind(this);
         titleTextView.setText(detailsTitle);

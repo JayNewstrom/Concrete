@@ -5,14 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ListView;
 
-import com.jaynewstrom.concrete.ConcreteBlock;
 import com.jaynewstrom.concretesample.BaseActivity;
 import com.jaynewstrom.concretesample.R;
+import com.jaynewstrom.concretesample.application.ApplicationComponent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public final class DetailActivity extends BaseActivity {
+public final class DetailActivity extends BaseActivity<DetailComponent> {
 
     private static final String INTENT_KEY_TITLE = "intent.title";
 
@@ -32,7 +32,11 @@ public final class DetailActivity extends BaseActivity {
         listView.setAdapter(new DetailsListAdapter());
     }
 
-    @Override protected ConcreteBlock concreteBlock() {
-        return new DetailConcreteBlock(getIntent().getStringExtra(INTENT_KEY_TITLE));
+    @Override protected DetailConcreteBlock concreteBlock(ApplicationComponent applicationComponent) {
+        return new DetailConcreteBlock(applicationComponent, getIntent().getStringExtra(INTENT_KEY_TITLE));
+    }
+
+    @Override protected void performInject(DetailComponent component) {
+        component.inject(this);
     }
 }
