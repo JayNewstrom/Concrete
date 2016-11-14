@@ -155,4 +155,70 @@ public final class ConcreteWallTest {
             assertThat(exception).hasMessage("Concrete wall has been destroyed.");
         }
     }
+
+    @Test public void throwsWhenComponentIsNullWhenPouringFoundation() {
+        try {
+            Concrete.pourFoundation(null);
+            fail();
+        } catch (NullPointerException exception) {
+            assertThat(exception).hasMessage("component == null");
+        }
+    }
+
+    @Test public void throwsWhenBlockIsNullWhenStacking() {
+        ConcreteWall<TestComponent> foundation = testComponentWall();
+        try {
+            foundation.stack(null);
+            fail();
+        } catch (NullPointerException exception) {
+            assertThat(exception).hasMessage(null);
+        }
+    }
+
+    static class InvalidTestChildBlock extends TestChildBlock {
+        private final boolean returnNullForName;
+        private final boolean returnNullForComponent;
+
+        InvalidTestChildBlock(TestComponent testComponent, boolean returnNullForName, boolean returnNullForComponent) {
+            super(testComponent);
+            this.returnNullForName = returnNullForName;
+            this.returnNullForComponent = returnNullForComponent;
+        }
+
+        @Override public String name() {
+            if (returnNullForName) {
+                return null;
+            }
+            return super.name();
+        }
+
+        @Override public TestChildComponent createComponent() {
+            if (returnNullForComponent) {
+                return null;
+            }
+            return super.createComponent();
+        }
+    }
+
+    @Test public void throwsWhenBlockNameIsNullWhenStacking() {
+        ConcreteWall<TestComponent> foundation = testComponentWall();
+        ConcreteBlock<TestChildComponent> block = new InvalidTestChildBlock(foundation.getComponent(), true, false);
+        try {
+            foundation.stack(block);
+            fail();
+        } catch (NullPointerException exception) {
+            assertThat(exception).hasMessage("block.name() == null");
+        }
+    }
+
+    @Test public void throwsWhenBlockComponentIsNullWhenStacking() {
+        ConcreteWall<TestComponent> foundation = testComponentWall();
+        ConcreteBlock<TestChildComponent> block = new InvalidTestChildBlock(foundation.getComponent(), false, true);
+        try {
+            foundation.stack(block);
+            fail();
+        } catch (NullPointerException exception) {
+            assertThat(exception).hasMessage("block.createComponent() == null");
+        }
+    }
 }

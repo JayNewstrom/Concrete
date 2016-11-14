@@ -18,6 +18,7 @@ public final class ConcreteWall<C> {
     ConcreteWall(ConcreteWall<?> parentWall, ConcreteBlock<C> block) {
         this.parentWall = parentWall;
         this.block = Preconditions.checkNotNull(block, "block == null");
+        Preconditions.checkNotNull(block.name(), "block.name() == null");
         this.childrenWalls = new LinkedHashMap<>();
         this.component = Preconditions.checkNotNull(block.createComponent(), "block.createComponent() == null");
     }
