@@ -1,36 +1,53 @@
 Concrete
 ========
 
-Concrete creates and caches Dagger 2 components in a way that make sense in Android applications. 
-
-What problems does Concrete solve?
--------
-* Organize dependencies in a way that makes sense in an Android Application
-* Manage singletons that can outlive the activity lifecycle
+Concrete creates and caches Dagger 2 components in Android applications. 
+Concrete manages scoped components that outlive the activity lifecycle.
+It can be useful to have the same component after a configuration change (rotation).
 
 Description of (high level) functionality
--------
+-----------------------------------------
 
 Concrete helps you build a wall (two dimensional). The foundational wall is poured in your Android Application subclass.
-Each block you stack on the wall adds to the available dependencies the wall provides.
-There is only ever one wall, the dependencies you have access to comes from the point in the wall you have access to (using Context#getSystemService).
+A `ConcreteBlock` is a lightweight configuration object that is stacked onto a wall. 
+When stacking a block, the wall you are stacking onto uses the blocks `name` to see if a child wall already exists and returns it, or creates a new wall with the blocks `createComponent` method when the wall doesn't already exist. 
 
+Concrete uses `Context#getSystemService` to give you access to a component anytime you have access to context. 
 If you only have access to the foundational wall (Application Context), you only have access to the dependencies provided in the foundational wall.
-If you have access to the login activity (Activity Context) then you have access to the dependencies provided in the Login Activity's wall, as well as the foundational wall.
+If you have access to the login activity (Activity Context) then you have access to the dependencies provided in the Login Activity's wall, (which generally has access to the foundational walls dependencies, depending on your component definition).
 
 An example of how this would be useful is retrofit services.
-Your RestAdapter instance should be cached across all services and your app, which would place it in the foundation.
-The specific service interfaces should be cached as singletons, but it doesn't make sense to have your messaging service cached when viewing your photos.
+Your Retrofit instance should be cached across all services and your app, which would place it in the foundation.
+The specific service interfaces should be cached as scoped singletons, but it doesn't make sense to have your messaging service cached when viewing your photos.
 
-What makes Concrete unique?
--------
+Wall Example
+------------
 
-This is different from Mortar in that there is no notion of listeners for the activity lifecycle events.
+    | ------------ Screen 1 Wall ------------ | ------------ Screen 2 Wall ------------ |
+    | ---------------------------------- Activity Wall ---------------------------------- |
+    | --------------------------------------- Application Wall --------------------------------------- |
+    
+Lifecycle Examples 
+------------------
+F - Framework event
+C - Concrete call
+M - More information
 
-This is similar to u2020's `Injector` but promotes the idea of having an `ObjectGraph` outlive the activity lifecycle.
+* F - Application Starts
+* C - Foundation poured (application wall) using `Concrete.pourFoundation(...);`
+    * F - Activity Starts
+    * M - application wall found using `Concrete.findWall(getApplicationContext());`
+    * C - `ConcreteBlock` stacked onto application wall (foundation)
+        * M - new wall is created using the blocks `createComponent` method
+* F - Configuration change (rotate)
+    * F - Activity Starts
+    * C - `ConcreteBlock` stacked onto application wall (foundation)
+        * M - cached wall is returned using the blocks `name` method 
+
 
 Setup
-------------
+-----
+
 ```groovy
 dependencies {
     compile 'com.jaynewstrom:concrete:0.10.0'
