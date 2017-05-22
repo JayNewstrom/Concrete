@@ -158,6 +158,7 @@ public final class ConcreteWallTest {
 
     @Test public void throwsWhenComponentIsNullWhenPouringFoundation() {
         try {
+            //noinspection ConstantConditions
             Concrete.pourFoundation(null);
             fail();
         } catch (NullPointerException exception) {
@@ -168,6 +169,7 @@ public final class ConcreteWallTest {
     @Test public void throwsWhenBlockIsNullWhenStacking() {
         ConcreteWall<TestComponent> foundation = testComponentWall();
         try {
+            //noinspection ConstantConditions
             foundation.stack(null);
             fail();
         } catch (NullPointerException exception) {
