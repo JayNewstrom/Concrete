@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 public final class ConcreteWall<C> {
 
     private boolean destroyed;
@@ -15,7 +17,7 @@ public final class ConcreteWall<C> {
     private final Map<String, ConcreteWall<?>> childrenWalls;
     private final C component;
 
-    ConcreteWall(ConcreteWall<?> parentWall, ConcreteBlock<C> block) {
+    ConcreteWall(@Nullable ConcreteWall<?> parentWall, ConcreteBlock<C> block) {
         this.parentWall = parentWall;
         this.block = Preconditions.checkNotNull(block, "block == null");
         Preconditions.checkNotNull(block.name(), "block.name() == null");

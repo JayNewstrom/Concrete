@@ -28,6 +28,7 @@ android {
         versionName '1.0'
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
         testApplicationId 'com.jaynewstrom.concrete.androidTest'
+        consumerProguardFiles 'consumer-proguard-rules.pro'
     }
 }
 
@@ -39,6 +40,7 @@ configurations.all {
 
 dependencies {
     compile deps.dagger
+    provided deps.jsr305
 
     testAnnotationProcessor deps.daggerCompiler
     testCompile deps.junit

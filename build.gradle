@@ -49,6 +49,7 @@ ext.deps = [
         appCompatv7: 'com.android.support:appcompat-v7:25.3.1',
         dagger: 'com.google.dagger:dagger:2.10',
         daggerCompiler: 'com.google.dagger:dagger-compiler:2.10',
+        jsr305: 'com.google.code.findbugs:jsr305:3.0.2',
 
         junit: 'junit:junit:4.12',
         fest: 'org.easytesting:fest-assert-core:2.0M10',
