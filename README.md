@@ -50,7 +50,7 @@ Setup
 
 ```groovy
 dependencies {
-    compile 'com.jaynewstrom:concrete:0.10.0'
+    compile 'com.jaynewstrom:concrete:0.11.0'
 }
 ```
 
