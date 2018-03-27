@@ -27,21 +27,21 @@ configurations.all {
 }
 
 dependencies {
-    compile deps.appCompatv7
+    implementation deps.appCompatv7
 
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 
-    compile deps.dagger
+    implementation deps.dagger
     annotationProcessor deps.daggerCompiler
 
-    compile 'com.jakewharton:butterknife:8.6.0'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
-    compile project(':concrete')
+    implementation project(':concrete')
 
-    androidTestCompile deps.junit
-    androidTestCompile deps.androidTestRunner
-    androidTestCompile deps.androidTestRules
-    androidTestCompile deps.espressoCore
+    androidTestImplementation deps.junit
+    androidTestImplementation deps.androidTestRunner
+    androidTestImplementation deps.androidTestRules
+    androidTestImplementation deps.espressoCore
 }

@@ -39,13 +39,13 @@ configurations.all {
 }
 
 dependencies {
-    compile deps.dagger
-    provided deps.jsr305
+    compileOnly deps.jsr305
 
+    testImplementation deps.dagger
     testAnnotationProcessor deps.daggerCompiler
-    testCompile deps.junit
-    testCompile deps.fest
-    testCompile deps.mockitoCore
+    testImplementation deps.junit
+    testImplementation deps.fest
+    testImplementation deps.mockitoCore
 }
 
 task sourcesJar(type: Jar) {
