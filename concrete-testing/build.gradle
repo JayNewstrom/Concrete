@@ -20,13 +20,13 @@ android {
 }
 
 dependencies {
-    compile project(':concrete')
-    compile deps.dagger
+    implementation project(':concrete')
+    implementation deps.dagger
     annotationProcessor deps.daggerCompiler
 
-    androidTestCompile deps.junit
-    androidTestCompile deps.fest
-    androidTestCompile deps.androidTestRunner
-    androidTestCompile deps.androidTestRules
-    androidTestCompile deps.espressoCore
+    androidTestImplementation deps.junit
+    androidTestImplementation deps.fest
+    androidTestImplementation deps.androidTestRunner
+    androidTestImplementation deps.androidTestRules
+    androidTestImplementation deps.espressoCore
 }
