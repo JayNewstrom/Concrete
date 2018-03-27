@@ -13,6 +13,9 @@ import dagger.Provides;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -111,6 +114,16 @@ public final class ConcreteWallTest {
         ConcreteWall<TestChildComponent> childWall = foundation.stack(block);
         assertThat(foundation.stack(block)).isSameAs(childWall);
         verify(block, times(1)).createComponent();
+    }
+
+    @SuppressWarnings("unchecked") @Test public void ensureStackCalledWithTheSameBlockNameCallsIniitaliza() {
+        ConcreteWall<TestComponent> foundation = testComponentWall();
+        ConcreteBlock<TestChildComponent> block = new TestChildBlock(foundation.getComponent());
+        ConcreteWallInitializationAction<TestChildComponent> initializationAction = mock(ConcreteWallInitializationAction.class);
+        foundation.stack(block, initializationAction);
+        verify(initializationAction).onWallInitialized(any(ConcreteWall.class));
+        foundation.stack(block, initializationAction);
+        verify(initializationAction).onWallInitialized(any(ConcreteWall.class));
     }
 
     @Test public void whenStackedThenDestroyedThenStackedAgainEnsureWallIsRecreated() {
@@ -222,5 +235,37 @@ public final class ConcreteWallTest {
         } catch (NullPointerException exception) {
             assertThat(exception).hasMessage("block.createComponent() == null");
         }
+    }
+
+    @SuppressWarnings("unchecked") @Test public void whenWallIsDestroyedEnsureDestructionActionsAreCalled() {
+        ConcreteWall<TestComponent> foundation = testComponentWall();
+        ConcreteBlock<TestChildComponent> block = new TestChildBlock(foundation.getComponent());
+        ConcreteWall<TestChildComponent> wall = foundation.stack(block);
+        ConcreteWallDestructionAction<TestChildComponent> destructionAction = mock(ConcreteWallDestructionAction.class);
+        wall.addDestructionAction(destructionAction);
+        wall.destroy();
+        verify(destructionAction).onWallDestroyed(any(TestChildComponent.class));
+    }
+
+    @SuppressWarnings("unchecked") @Test public void whenDestructionActionIsRemovedEnsureDestructionActionsAreNotCalled() {
+        ConcreteWall<TestComponent> foundation = testComponentWall();
+        ConcreteBlock<TestChildComponent> block = new TestChildBlock(foundation.getComponent());
+        ConcreteWall<TestChildComponent> wall = foundation.stack(block);
+        ConcreteWallDestructionAction<TestChildComponent> destructionAction = mock(ConcreteWallDestructionAction.class);
+        wall.addDestructionAction(destructionAction);
+        wall.removeDestructionAction(destructionAction);
+        wall.destroy();
+        verify(destructionAction, never()).onWallDestroyed(any(TestChildComponent.class));
+    }
+
+    @SuppressWarnings("unchecked") @Test public void whenWallIsDestroyedEnsureDestructionActionsAreCalledExactlyOnce() {
+        ConcreteWall<TestComponent> foundation = testComponentWall();
+        ConcreteBlock<TestChildComponent> block = new TestChildBlock(foundation.getComponent());
+        ConcreteWall<TestChildComponent> wall = foundation.stack(block);
+        ConcreteWallDestructionAction<TestChildComponent> destructionAction = mock(ConcreteWallDestructionAction.class);
+        wall.addDestructionAction(destructionAction);
+        wall.destroy();
+        wall.destroy(); // No op, the wall is already destroyed.
+        verify(destructionAction).onWallDestroyed(any(TestChildComponent.class));
     }
 }

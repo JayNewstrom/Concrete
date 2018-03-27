@@ -4,7 +4,9 @@ import android.content.Context;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -16,6 +18,7 @@ public final class ConcreteWall<C> {
     private final ConcreteBlock<C> block;
     private final Map<String, ConcreteWall<?>> childrenWalls;
     private final C component;
+    private final Set<ConcreteWallDestructionAction<C>> destructionActions;
 
     ConcreteWall(@Nullable ConcreteWall<?> parentWall, ConcreteBlock<C> block) {
         this.parentWall = parentWall;
@@ -23,6 +26,7 @@ public final class ConcreteWall<C> {
         Preconditions.checkNotNull(block.name(), "block.name() == null");
         this.childrenWalls = new LinkedHashMap<>();
         this.component = Preconditions.checkNotNull(block.createComponent(), "block.createComponent() == null");
+        this.destructionActions = new LinkedHashSet<>();
     }
 
     /**
@@ -30,12 +34,27 @@ public final class ConcreteWall<C> {
      * If it doesn't exist it will be created, cached as a child, then returned.
      */
     public <ChildComponent> ConcreteWall<ChildComponent> stack(ConcreteBlock<ChildComponent> block) {
+        return stack(block, null);
+    }
+
+    /**
+     * If a wall identified by the blocks name exists as a child, it will be returned.
+     * If it doesn't exist it will be created, cached as a child, the initialization action will run, then the wall will be returned.
+     */
+    public <ChildComponent> ConcreteWall<ChildComponent> stack(
+            ConcreteBlock<ChildComponent> block,
+            @Nullable ConcreteWallInitializationAction<ChildComponent> initializationAction
+    ) {
         //noinspection unchecked
         ConcreteWall<ChildComponent> existingWall = (ConcreteWall<ChildComponent>) childrenWalls.get(block.name());
         if (existingWall != null) {
             return existingWall;
         } else {
-            return createAndCacheChildWall(block);
+            ConcreteWall<ChildComponent> childWall = createAndCacheChildWall(block);
+            if (initializationAction != null) {
+                initializationAction.onWallInitialized(childWall);
+            }
+            return childWall;
         }
     }
 
@@ -61,6 +80,9 @@ public final class ConcreteWall<C> {
             if (parentWall != null) {
                 parentWall.removeChildWall(this);
             }
+            for (ConcreteWallDestructionAction<C> destructionAction : destructionActions) {
+                destructionAction.onWallDestroyed(component);
+            }
         }
     }
 
@@ -83,5 +105,25 @@ public final class ConcreteWall<C> {
      */
     public Context createContext(Context baseContext) {
         return new ConcreteWallContext<>(baseContext, this);
+    }
+
+    /**
+     * Add a {@link ConcreteWallDestructionAction} to the wall, to be called exactly once when the wall is destroyed.
+     */
+    public void addDestructionAction(ConcreteWallDestructionAction<C> destructionAction) {
+        if (destroyed) {
+            throw new IllegalStateException("Concrete wall has been destroyed.");
+        }
+        destructionActions.add(destructionAction);
+    }
+
+    /**
+     * Remove a {@link ConcreteWallDestructionAction} that may or may not have been previously added.
+     */
+    public void removeDestructionAction(ConcreteWallDestructionAction<C> destructionAction) {
+        if (destroyed) {
+            throw new IllegalStateException("Concrete wall has been destroyed.");
+        }
+        destructionActions.remove(destructionAction);
     }
 }
