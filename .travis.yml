@@ -21,7 +21,7 @@ before_script:
   - android-wait-for-emulator
 
 script:
-  - ./gradlew build checkstyle test
+  - ./gradlew build ktlintCheck test
   - adb shell input keyevent 82
   - ./gradlew connectedCheck
 
