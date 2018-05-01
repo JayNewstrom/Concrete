@@ -14,8 +14,8 @@ abstract class BaseActivity<C> : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val applicationWall = Concrete.findWall<ConcreteWall<ApplicationComponent>>(applicationContext)
-        activityConcreteWall = applicationWall.stack(concreteBlock(applicationWall.getComponent()))
-        performInject(activityConcreteWall.getComponent())
+        activityConcreteWall = applicationWall.stack(concreteBlock(applicationWall.component))
+        performInject(activityConcreteWall.component)
     }
 
     protected abstract fun concreteBlock(applicationComponent: ApplicationComponent): ConcreteBlock<C>

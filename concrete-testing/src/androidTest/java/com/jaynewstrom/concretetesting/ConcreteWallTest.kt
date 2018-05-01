@@ -20,7 +20,7 @@ class ConcreteWallTest {
 
     @Test fun whenViewIsCreatedWithLayoutInflaterFromChildContextEnsureItCanBeInjectedWithContext() {
         val wall = Concrete.pourFoundation(DaggerContextTestComponent.create())
-        val child = wall.stack(ContextChildTestBlock(wall.getComponent()))
+        val child = wall.stack(ContextChildTestBlock(wall.component))
         val context = child.createContext(InstrumentationRegistry.getTargetContext())
         val exampleView = LayoutInflater.from(context).inflate(R.layout.example, null) as ExampleView
         assertThat(exampleView.injectedChildString).isSameAs("I'm the child")

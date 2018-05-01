@@ -8,7 +8,16 @@ class ConcreteWall<out C> internal constructor(
 ) {
     private var destroyed: Boolean = false
     private val childrenWalls: MutableMap<String, ConcreteWall<*>> = LinkedHashMap()
-    private val component: C = block.createComponent()
+    /**
+     * Get the component associated with the wall.
+     */
+    val component: C = block.createComponent()
+        get() {
+            if (destroyed) {
+                throw IllegalStateException("Concrete wall has been destroyed.")
+            }
+            return field
+        }
     private val destructionActions: MutableSet<ConcreteWallDestructionAction<C>> = LinkedHashSet()
 
     /**
@@ -18,7 +27,7 @@ class ConcreteWall<out C> internal constructor(
      */
     @JvmOverloads fun <ChildComponent> stack(
         block: ConcreteBlock<ChildComponent>,
-        initializationAction: ConcreteWallInitializationAction<ChildComponent>? = null
+        initializationAction: ((wall: ConcreteWall<ChildComponent>) -> Unit)? = null
     ): ConcreteWall<ChildComponent> {
         @Suppress("UNCHECKED_CAST")
         val existingWall = childrenWalls[block.name()] as ConcreteWall<ChildComponent>?
@@ -26,7 +35,7 @@ class ConcreteWall<out C> internal constructor(
             existingWall
         } else {
             val childWall = createAndCacheChildWall(block)
-            initializationAction?.onWallInitialized(childWall)
+            initializationAction?.invoke(childWall)
             childWall
         }
     }
@@ -44,6 +53,7 @@ class ConcreteWall<out C> internal constructor(
      */
     fun destroy() {
         if (!destroyed) {
+            val component = component
             destroyed = true
             if (childrenWalls.isNotEmpty()) {
                 // We need to copy the collection, so we can iterate over all values and destroy them.
@@ -54,23 +64,13 @@ class ConcreteWall<out C> internal constructor(
             }
             parentWall?.removeChildWall(this)
             for (destructionAction in destructionActions) {
-                destructionAction.onWallDestroyed(component)
+                destructionAction(component)
             }
         }
     }
 
     private fun removeChildWall(wall: ConcreteWall<*>) {
         childrenWalls.remove(wall.block.name())
-    }
-
-    /**
-     * Get the component associated with the wall.
-     */
-    fun getComponent(): C {
-        if (destroyed) {
-            throw IllegalStateException("Concrete wall has been destroyed.")
-        }
-        return component
     }
 
     /**
@@ -84,9 +84,9 @@ class ConcreteWall<out C> internal constructor(
     }
 
     /**
-     * Add a [ConcreteWallDestructionAction] to the wall, to be called exactly once when the wall is destroyed.
+     * Add a [destructionAction] to the wall, to be called exactly once when the wall is destroyed.
      */
-    fun addDestructionAction(destructionAction: ConcreteWallDestructionAction<C>) {
+    fun addDestructionAction(destructionAction: (component: C) -> Unit) {
         if (destroyed) {
             throw IllegalStateException("Concrete wall has been destroyed.")
         }
@@ -94,12 +94,14 @@ class ConcreteWall<out C> internal constructor(
     }
 
     /**
-     * Remove a [ConcreteWallDestructionAction] that may or may not have been previously added.
+     * Remove a [destructionAction] that may or may not have been previously added.
      */
-    fun removeDestructionAction(destructionAction: ConcreteWallDestructionAction<C>) {
+    fun removeDestructionAction(destructionAction: (component: C) -> Unit) {
         if (destroyed) {
             throw IllegalStateException("Concrete wall has been destroyed.")
         }
         destructionActions.remove(destructionAction)
     }
 }
+
+private typealias ConcreteWallDestructionAction<C> = (component: C) -> Unit
