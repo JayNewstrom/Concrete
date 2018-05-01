@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -22,7 +24,8 @@ android {
 dependencies {
     implementation project(':concrete')
     implementation deps.dagger
-    annotationProcessor deps.daggerCompiler
+    kapt deps.daggerCompiler
+    api deps.kotlinRuntime
 
     androidTestImplementation deps.junit
     androidTestImplementation deps.fest
