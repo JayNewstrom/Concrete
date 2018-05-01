@@ -6,11 +6,11 @@ import dagger.Provides
 import org.fest.assertions.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
-import org.mockito.Mockito.never
 import org.mockito.Mockito.spy
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import java.lang.ref.WeakReference
+import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -23,7 +23,7 @@ class ConcreteWallTest {
         val concreteWall = testComponentWall()
         concreteWall.destroy()
         try {
-            concreteWall.getComponent()
+            concreteWall.component
             fail()
         } catch (exception: IllegalStateException) {
             assertThat(exception).hasMessage("Concrete wall has been destroyed.")
@@ -48,16 +48,16 @@ class ConcreteWallTest {
     @Test fun ensureWallInjectSetsVariable() {
         val concreteWall = testComponentWall()
         val target = TestTarget()
-        concreteWall.getComponent().inject(target)
+        concreteWall.component.inject(target)
         assertThat(target.string).isEqualTo("Concrete")
     }
 
     @Test fun stackedWallInjectSetsVariable() {
         val foundation = testComponentWall()
-        val block = TestChildBlock(foundation.getComponent())
+        val block = TestChildBlock(foundation.component)
         val childWall = foundation.stack(block)
         val childTarget = TestChildTarget()
-        childWall.getComponent().inject(childTarget)
+        childWall.component.inject(childTarget)
         assertThat(childTarget.childString).isEqualTo("Concrete-Child")
     }
 
@@ -85,7 +85,7 @@ class ConcreteWallTest {
 
     @Test fun ensureStackCalledWithTheSameBlockNameReturnsSameWall() {
         val foundation = testComponentWall()
-        val block = spy(TestChildBlock(foundation.getComponent()))
+        val block = spy(TestChildBlock(foundation.component))
         val childWall = foundation.stack(block)
         assertThat(foundation.stack(block)).isSameAs(childWall)
         verify<ConcreteBlock<TestChildComponent>>(block, times(1)).createComponent()
@@ -93,19 +93,21 @@ class ConcreteWallTest {
 
     @Test fun ensureStackCalledWithTheSameBlockNameCallsInitializationAction() {
         val foundation = testComponentWall()
-        val block = TestChildBlock(foundation.getComponent())
-        val initializationAction = kotlinMock<ConcreteWallInitializationAction<TestChildComponent>>()
-        foundation.stack(block, initializationAction)
-        verify<ConcreteWallInitializationAction<TestChildComponent>>(initializationAction)
-            .onWallInitialized(kotlinAny())
-        foundation.stack(block, initializationAction)
-        verify<ConcreteWallInitializationAction<TestChildComponent>>(initializationAction)
-            .onWallInitialized(kotlinAny())
+        val block = TestChildBlock(foundation.component)
+        val initializationActionCalledCount = AtomicInteger(0)
+        foundation.stack(block) {
+            initializationActionCalledCount.incrementAndGet()
+        }
+        assertThat(initializationActionCalledCount.get()).isEqualTo(1)
+        foundation.stack(block) {
+            initializationActionCalledCount.incrementAndGet()
+        }
+        assertThat(initializationActionCalledCount.get()).isEqualTo(1)
     }
 
     @Test fun whenStackedThenDestroyedThenStackedAgainEnsureWallIsRecreated() {
         val foundation = testComponentWall()
-        val block = spy(TestChildBlock(foundation.getComponent()))
+        val block = spy(TestChildBlock(foundation.component))
         val childWall = foundation.stack(block)
         assertThat(foundation.stack(block)).isSameAs(childWall)
         verify<ConcreteBlock<TestChildComponent>>(block, times(1)).createComponent()
@@ -116,7 +118,7 @@ class ConcreteWallTest {
 
     @Test fun whenWallIsDestroyedEnsureItCanBeGarbageCollected() {
         val foundation = testComponentWall()
-        val block = spy(TestChildBlock(foundation.getComponent()))
+        val block = spy(TestChildBlock(foundation.component))
         val wallWeakReference = WeakReference(foundation.stack(block))
         wallWeakReference.get()!!.destroy()
         System.gc()
@@ -125,21 +127,21 @@ class ConcreteWallTest {
 
     @Test fun whenChildIsDestroyedEnsureTheParentIsStillUsable() {
         val foundation = testComponentWall()
-        val block = spy(TestChildBlock(foundation.getComponent()))
+        val block = spy(TestChildBlock(foundation.component))
         val childWall = foundation.stack(block)
         childWall.destroy()
         val target = TestTarget()
-        foundation.getComponent().inject(target)
+        foundation.component.inject(target)
         assertThat(target.string).isEqualTo("Concrete")
     }
 
     @Test fun whenParentIsDestroyedEnsureChildrenAreAlsoDestroyed() {
         val foundation = testComponentWall()
-        val block = spy(TestChildBlock(foundation.getComponent()))
+        val block = spy(TestChildBlock(foundation.component))
         val childWall = foundation.stack(block)
         foundation.destroy()
         try {
-            childWall.getComponent()
+            childWall.component
             fail()
         } catch (exception: IllegalStateException) {
             assertThat(exception).hasMessage("Concrete wall has been destroyed.")
@@ -148,34 +150,37 @@ class ConcreteWallTest {
 
     @Test fun whenWallIsDestroyedEnsureDestructionActionsAreCalled() {
         val foundation = testComponentWall()
-        val block = TestChildBlock(foundation.getComponent())
+        val block = TestChildBlock(foundation.component)
         val wall = foundation.stack(block)
-        val destructionAction = kotlinMock<ConcreteWallDestructionAction<ConcreteWallTest.TestChildComponent>>()
-        wall.addDestructionAction(destructionAction)
+        val destructionActionCalledCount = AtomicInteger(0)
+        wall.addDestructionAction {
+            destructionActionCalledCount.incrementAndGet()
+        }
         wall.destroy()
-        verify<ConcreteWallDestructionAction<TestChildComponent>>(destructionAction).onWallDestroyed(kotlinAny())
+        assertThat(destructionActionCalledCount.get()).isEqualTo(1)
     }
 
     @Test fun whenDestructionActionIsRemovedEnsureDestructionActionsAreNotCalled() {
         val foundation = testComponentWall()
-        val block = TestChildBlock(foundation.getComponent())
+        val block = TestChildBlock(foundation.component)
         val wall = foundation.stack(block)
-        val destructionAction = kotlinMock<ConcreteWallDestructionAction<ConcreteWallTest.TestChildComponent>>()
+        val destructionActionCalledCount = AtomicInteger(0)
+        val destructionAction: (TestChildComponent) -> Unit = { destructionActionCalledCount.incrementAndGet() }
         wall.addDestructionAction(destructionAction)
         wall.removeDestructionAction(destructionAction)
         wall.destroy()
-        verify<ConcreteWallDestructionAction<TestChildComponent>>(destructionAction, never())
-            .onWallDestroyed(kotlinAny())
+        assertThat(destructionActionCalledCount.get()).isEqualTo(0)
     }
 
     @Test fun whenWallIsDestroyedEnsureDestructionActionsAreCalledExactlyOnce() {
         val foundation = testComponentWall()
-        val block = TestChildBlock(foundation.getComponent())
+        val block = TestChildBlock(foundation.component)
         val wall = foundation.stack(block)
-        val destructionAction = kotlinMock<ConcreteWallDestructionAction<ConcreteWallTest.TestChildComponent>>()
+        val destructionActionCalledCount = AtomicInteger(0)
+        val destructionAction: (TestChildComponent) -> Unit = { destructionActionCalledCount.incrementAndGet() }
         wall.addDestructionAction(destructionAction)
         wall.destroy()
         wall.destroy() // No op, the wall is already destroyed.
-        verify<ConcreteWallDestructionAction<TestChildComponent>>(destructionAction).onWallDestroyed(kotlinAny())
+        assertThat(destructionActionCalledCount.get()).isEqualTo(1)
     }
 }
