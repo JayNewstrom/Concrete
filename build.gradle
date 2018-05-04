@@ -57,9 +57,10 @@ subprojects {
     }
 
     configureKotlinLint(it)
+    configureKotlinModuleName(it)
 }
 
-def configureKotlinLint(Project project) {
+static def configureKotlinLint(Project project) {
     def closure = {
         project.configurations {
             ktlint
@@ -82,6 +83,14 @@ def configureKotlinLint(Project project) {
             classpath = project.configurations.ktlint
             args '-r', 'src/**/*.kt'
         }
+    }
+    project.plugins.withId('kotlin-android', closure)
+    project.plugins.withId('kotlin', closure)
+}
+
+static def configureKotlinModuleName(Project project) {
+    def closure = {
+        project.archivesBaseName = "com.jaynewstrom.$project.name"
     }
     project.plugins.withId('kotlin-android', closure)
     project.plugins.withId('kotlin', closure)
