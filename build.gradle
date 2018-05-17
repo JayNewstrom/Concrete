@@ -57,7 +57,7 @@ subprojects {
     }
 
     configureKotlinLint(it)
-    configureKotlinModuleName(it)
+    configureAndroidPlugin(it)
 }
 
 static def configureKotlinLint(Project project) {
@@ -88,10 +88,17 @@ static def configureKotlinLint(Project project) {
     project.plugins.withId('kotlin', closure)
 }
 
-static def configureKotlinModuleName(Project project) {
+static def configureAndroidPlugin(Project project) {
     def closure = {
-        project.archivesBaseName = "com.jaynewstrom.$project.name"
+        project.android {
+            packagingOptions {
+                exclude 'META-INF/*.kotlin_module'
+                exclude 'kotlin/**'
+                exclude 'META-INF/*.version'
+            }
+        }
     }
-    project.plugins.withId('kotlin-android', closure)
-    project.plugins.withId('kotlin', closure)
+
+    project.plugins.withId('com.android.application', closure)
+    project.plugins.withId('com.android.library', closure)
 }
