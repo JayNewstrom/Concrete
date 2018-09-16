@@ -94,7 +94,7 @@ static def configureAndroidPlugin(Project project) {
 
             defaultConfig {
                 minSdkVersion 15
-                testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+                testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
                 testApplicationId 'com.jaynewstrom.concretesample.androidTest'
             }
         }
