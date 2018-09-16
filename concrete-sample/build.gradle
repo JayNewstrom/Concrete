@@ -14,16 +14,13 @@ android {
 dependencies {
     api deps.kotlinRuntime
 
-    implementation deps.appCompatv7
+    implementation deps.appCompat
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
 
     implementation deps.dagger
     kapt deps.daggerCompiler
-
-    implementation 'com.jakewharton:butterknife:8.8.1'
-    kapt 'com.jakewharton:butterknife-compiler:8.8.1'
 
     implementation project(':concrete')
 

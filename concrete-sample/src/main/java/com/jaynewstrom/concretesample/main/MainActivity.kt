@@ -2,8 +2,6 @@ package com.jaynewstrom.concretesample.main
 
 import android.os.Bundle
 import android.widget.TextView
-import butterknife.ButterKnife
-import butterknife.OnClick
 import com.jaynewstrom.concretesample.BaseActivity
 import com.jaynewstrom.concretesample.R
 import com.jaynewstrom.concretesample.application.ApplicationComponent
@@ -17,8 +15,19 @@ class MainActivity : BaseActivity<MainActivityComponent>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        ButterKnife.bind(this)
         setTitle(title)
+
+        findViewById<TextView>(R.id.first_details_button).let { button ->
+            button.setOnClickListener {
+                onDetailsButtonClicked(button)
+            }
+        }
+
+        findViewById<TextView>(R.id.second_details_button).let { button ->
+            button.setOnClickListener {
+                onDetailsButtonClicked(button)
+            }
+        }
     }
 
     override fun concreteBlock(applicationComponent: ApplicationComponent): MainActivityConcreteBlock {
@@ -29,7 +38,7 @@ class MainActivity : BaseActivity<MainActivityComponent>() {
         component.inject(this)
     }
 
-    @OnClick(R.id.first_details_button, R.id.second_details_button) fun onDetailsButtonClicked(button: TextView) {
+    private fun onDetailsButtonClicked(button: TextView) {
         startActivity(DetailActivity.buildIntent(this, button.text.toString()))
     }
 }
