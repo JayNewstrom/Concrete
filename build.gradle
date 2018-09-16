@@ -1,9 +1,5 @@
 ext {
-    minSdkVersion = 15
     targetSdkVersion = 28
-    compileSdkVersion = 28
-    sourceCompatibilityVersion = JavaVersion.VERSION_1_7
-    targetCompatibilityVersion = JavaVersion.VERSION_1_7
     kotlinVersion = '1.2.70'
 }
 
@@ -89,10 +85,17 @@ static def configureKotlinLint(Project project) {
 static def configureAndroidPlugin(Project project) {
     def closure = {
         project.android {
-            packagingOptions {
-                exclude 'META-INF/*.kotlin_module'
-                exclude 'kotlin/**'
-                exclude 'META-INF/*.version'
+            compileSdkVersion 28
+
+            compileOptions {
+                sourceCompatibility JavaVersion.VERSION_1_8
+                targetCompatibility JavaVersion.VERSION_1_8
+            }
+
+            defaultConfig {
+                minSdkVersion 15
+                testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+                testApplicationId 'com.jaynewstrom.concretesample.androidTest'
             }
         }
     }
