@@ -6,7 +6,6 @@ apply plugin: 'com.jfrog.bintray'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     compileOptions {
         sourceCompatibility rootProject.ext.sourceCompatibilityVersion
@@ -20,12 +19,6 @@ android {
         versionName '1.0'
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
         testApplicationId 'com.jaynewstrom.concrete.androidTest'
-    }
-}
-
-configurations.all {
-    resolutionStrategy {
-        force deps.supportAnnotations
     }
 }
 

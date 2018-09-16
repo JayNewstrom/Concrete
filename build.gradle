@@ -1,23 +1,21 @@
 ext {
     minSdkVersion = 15
-    targetSdkVersion = 27
-    compileSdkVersion = 27
-    buildToolsVersion = '27.0.3'
+    targetSdkVersion = 28
+    compileSdkVersion = 28
     sourceCompatibilityVersion = JavaVersion.VERSION_1_7
     targetCompatibilityVersion = JavaVersion.VERSION_1_7
-    kotlinVersion = '1.2.41'
+    kotlinVersion = '1.2.70'
 }
 
 ext.deps = [
-        supportAnnotations: 'com.android.support:support-annotations:27.1.0',
         appCompatv7: 'com.android.support:appcompat-v7:27.1.0',
-        dagger: 'com.google.dagger:dagger:2.15',
-        daggerCompiler: 'com.google.dagger:dagger-compiler:2.15',
+        dagger: 'com.google.dagger:dagger:2.17',
+        daggerCompiler: 'com.google.dagger:dagger-compiler:2.17',
         kotlinRuntime: "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion",
 
         junit: 'junit:junit:4.12',
         fest: 'org.easytesting:fest-assert-core:2.0M10',
-        mockitoCore: 'org.mockito:mockito-core:2.8.9',
+        mockitoCore: 'org.mockito:mockito-core:2.22.0',
         androidTestRunner: 'com.android.support.test:runner:1.0.1',
         androidTestRules: 'com.android.support.test:rules:1.0.1',
         espressoCore: 'com.android.support.test.espresso:espresso-core:3.0.1',
@@ -29,7 +27,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath 'com.android.tools.build:gradle:3.2.0-rc03'
     }
 }
 
@@ -67,7 +65,7 @@ static def configureKotlinLint(Project project) {
         }
 
         project.dependencies {
-            ktlint 'com.github.shyiko:ktlint:0.22.0'
+            ktlint 'com.github.shyiko:ktlint:0.28.0'
         }
 
         def ktlintCheck = project.tasks.create('ktlintCheck', JavaExec.class) {
