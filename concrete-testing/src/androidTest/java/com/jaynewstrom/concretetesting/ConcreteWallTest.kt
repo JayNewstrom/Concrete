@@ -1,8 +1,8 @@
 package com.jaynewstrom.concretetesting
 
-import android.support.test.InstrumentationRegistry
-import android.support.test.runner.AndroidJUnit4
 import android.view.LayoutInflater
+import androidx.test.InstrumentationRegistry
+import androidx.test.runner.AndroidJUnit4
 import com.jaynewstrom.concrete.Concrete
 import org.fest.assertions.api.Assertions.assertThat
 import org.junit.Test
