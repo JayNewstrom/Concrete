@@ -9,6 +9,12 @@ android {
         versionCode 1
         versionName '1.0'
     }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -16,7 +22,7 @@ dependencies {
 
     implementation deps.appCompat
 
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
 
     implementation deps.dagger
@@ -24,8 +30,9 @@ dependencies {
 
     implementation project(':concrete')
 
-    androidTestImplementation deps.junit
-    androidTestImplementation deps.androidTestRunner
-    androidTestImplementation deps.androidTestRules
-    androidTestImplementation deps.espressoCore
+    testImplementation deps.junit
+    testImplementation deps.androidTestRunner
+    testImplementation deps.androidTestRules
+    testImplementation deps.espressoCore
+    testImplementation deps.roboelectric
 }

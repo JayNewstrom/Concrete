@@ -12,9 +12,11 @@ ext.deps = [
         junit: 'junit:junit:4.12',
         fest: 'org.easytesting:fest-assert-core:2.0M10',
         mockitoCore: 'org.mockito:mockito-core:2.22.0',
-        androidTestRunner: 'androidx.test:runner:1.1.0-alpha4',
-        androidTestRules: 'androidx.test:rules:1.1.0-alpha4',
-        espressoCore: 'androidx.test.espresso:espresso-core:3.1.0-alpha4',
+        androidTestRunner: 'androidx.test:runner:1.1.0-beta01',
+        androidTestRules: 'androidx.test:rules:1.1.0-beta01',
+        testCore: 'androidx.test:core:1.0.0-beta01',
+        espressoCore: 'androidx.test.espresso:espresso-core:3.1.0-beta01',
+        roboelectric: 'org.robolectric:robolectric:4.0-beta-1',
 ]
 
 buildscript {
@@ -93,7 +95,7 @@ static def configureAndroidPlugin(Project project) {
             }
 
             defaultConfig {
-                minSdkVersion 15
+                minSdkVersion 16
                 testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
                 testApplicationId 'com.jaynewstrom.concretesample.androidTest'
             }

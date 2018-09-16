@@ -8,6 +8,12 @@ android {
         versionCode 1
         versionName '1.0'
     }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -16,9 +22,11 @@ dependencies {
     kapt deps.daggerCompiler
     api deps.kotlinRuntime
 
-    androidTestImplementation deps.junit
-    androidTestImplementation deps.fest
-    androidTestImplementation deps.androidTestRunner
-    androidTestImplementation deps.androidTestRules
-    androidTestImplementation deps.espressoCore
+    testImplementation deps.junit
+    testImplementation deps.fest
+    testImplementation deps.androidTestRunner
+    testImplementation deps.androidTestRules
+    testImplementation deps.espressoCore
+    testImplementation deps.testCore
+    testImplementation deps.roboelectric
 }
