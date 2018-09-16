@@ -4,7 +4,7 @@ ext {
 }
 
 ext.deps = [
-        appCompatv7: 'com.android.support:appcompat-v7:27.1.0',
+        appCompat: 'androidx.appcompat:appcompat:1.0.0-rc02',
         dagger: 'com.google.dagger:dagger:2.17',
         daggerCompiler: 'com.google.dagger:dagger-compiler:2.17',
         kotlinRuntime: "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion",
@@ -12,9 +12,9 @@ ext.deps = [
         junit: 'junit:junit:4.12',
         fest: 'org.easytesting:fest-assert-core:2.0M10',
         mockitoCore: 'org.mockito:mockito-core:2.22.0',
-        androidTestRunner: 'com.android.support.test:runner:1.0.1',
-        androidTestRules: 'com.android.support.test:rules:1.0.1',
-        espressoCore: 'com.android.support.test.espresso:espresso-core:3.0.1',
+        androidTestRunner: 'androidx.test:runner:1.1.0-alpha4',
+        androidTestRules: 'androidx.test:rules:1.1.0-alpha4',
+        espressoCore: 'androidx.test.espresso:espresso-core:3.1.0-alpha4',
 ]
 
 buildscript {
@@ -94,7 +94,7 @@ static def configureAndroidPlugin(Project project) {
 
             defaultConfig {
                 minSdkVersion 15
-                testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+                testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
                 testApplicationId 'com.jaynewstrom.concretesample.androidTest'
             }
         }

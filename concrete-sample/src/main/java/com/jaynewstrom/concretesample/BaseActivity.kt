@@ -1,8 +1,7 @@
 package com.jaynewstrom.concretesample
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-
+import androidx.appcompat.app.AppCompatActivity
 import com.jaynewstrom.concrete.Concrete
 import com.jaynewstrom.concrete.ConcreteBlock
 import com.jaynewstrom.concrete.ConcreteWall

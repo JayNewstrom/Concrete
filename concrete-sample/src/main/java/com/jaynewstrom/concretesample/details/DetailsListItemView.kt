@@ -4,8 +4,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
-import butterknife.BindView
-import butterknife.ButterKnife
 import com.jaynewstrom.concrete.Concrete
 import com.jaynewstrom.concretesample.R
 import javax.inject.Inject
@@ -14,14 +12,16 @@ import javax.inject.Named
 class DetailsListItemView(context: Context) : LinearLayout(context) {
     @Inject @field:Named("detailsTitle") lateinit var detailsTitle: String
 
-    @BindView(R.id.tv_position) lateinit var positionTextView: TextView
-    @BindView(R.id.tv_title) lateinit var titleTextView: TextView
+    private val positionTextView: TextView
 
     init {
         Concrete.getComponent<DetailComponent>(context).inject(this)
         LayoutInflater.from(context).inflate(R.layout.details_list_item, this, true)
-        ButterKnife.bind(this)
+
+        val titleTextView = findViewById<TextView>(R.id.tv_title)
         titleTextView.text = detailsTitle
+
+        positionTextView = findViewById(R.id.tv_position)
     }
 
     fun setPosition(position: Int) {
