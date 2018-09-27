@@ -183,4 +183,36 @@ class ConcreteWallTest {
         wall.destroy() // No op, the wall is already destroyed.
         assertThat(destructionActionCalledCount.get()).isEqualTo(1)
     }
+
+    @Test fun componentOfTypeIncludingParentsReturnsCurrentComponent() {
+        val foundation = testComponentWall()
+        val block = TestChildBlock(foundation.component)
+        val wall = foundation.stack(block)
+        val component = wall.componentOfTypeIncludingParents(TestChildComponent::class.java)
+        assertThat(component).isNotNull
+        assertThat(component).isInstanceOf(TestChildComponent::class.java)
+        assertThat(component).isEqualTo(wall.component)
+    }
+
+    @Test fun componentOfTypeIncludingParentsReturnsParentComponent() {
+        val foundation = testComponentWall()
+        val block = TestChildBlock(foundation.component)
+        val wall = foundation.stack(block)
+        val component = wall.componentOfTypeIncludingParents(TestComponent::class.java)
+        assertThat(component).isNotNull
+        assertThat(component).isInstanceOf(TestComponent::class.java)
+        assertThat(component).isNotInstanceOf(TestChildComponent::class.java)
+    }
+
+    @Test fun componentOfTypeIncludingParentsThrowsOnUnknownComponent() {
+        val foundation = testComponentWall()
+        val block = TestChildBlock(foundation.component)
+        val wall = foundation.stack(block)
+        try {
+            wall.componentOfTypeIncludingParents(ConcreteWallTest::class.java)
+            fail()
+        } catch (e: IllegalArgumentException) {
+            assertThat(e).hasMessageContaining("context is not associated with a wall having a component implementing")
+        }
+    }
 }

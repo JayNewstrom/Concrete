@@ -102,6 +102,30 @@ class ConcreteWall<out C> internal constructor(
         }
         destructionActions.remove(destructionAction)
     }
+
+    /**
+     * Returns this walls component if it implements the given type, or looks up the tree, into the parent walls to find
+     * one that implements the given type.
+     */
+    @Suppress("UNCHECKED_CAST") // Guarded by isInstance checks.
+    fun <T> componentOfTypeIncludingParents(type: Class<T>): T {
+        val component = component
+        if (type.isInstance(component)) {
+            return component as T
+        }
+
+        var parentWall = parentWall
+        while (parentWall != null) {
+            val parentComponent = parentWall.component
+            if (type.isInstance(parentComponent)) {
+                return parentComponent as T
+            }
+            parentWall = parentWall.parentWall
+        }
+
+        val exceptionMessage = "context is not associated with a wall having a component implementing $type"
+        throw IllegalArgumentException(exceptionMessage)
+    }
 }
 
 private typealias ConcreteWallDestructionAction<C> = (component: C) -> Unit

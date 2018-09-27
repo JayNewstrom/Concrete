@@ -39,7 +39,7 @@ object Concrete {
      *
      * @throws IllegalStateException if the wall associated with the context is destroyed.
      */
-    @JvmStatic fun <C> getComponent(context: Context): C {
-        return Concrete.findWall<ConcreteWall<C>>(context).component
+    @JvmStatic inline fun <reified C> getComponent(context: Context): C {
+        return Concrete.findWall<ConcreteWall<*>>(context).componentOfTypeIncludingParents(C::class.java)
     }
 }
