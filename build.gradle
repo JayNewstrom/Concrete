@@ -4,7 +4,7 @@ ext {
 }
 
 ext.deps = [
-        appCompat: 'androidx.appcompat:appcompat:1.0.0-rc02',
+        appCompat: 'androidx.appcompat:appcompat:1.0.0',
         dagger: 'com.google.dagger:dagger:2.17',
         daggerCompiler: 'com.google.dagger:dagger-compiler:2.17',
         kotlinRuntime: "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion",
@@ -23,7 +23,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.0-rc03'
+        classpath 'com.android.tools.build:gradle:3.2.0'
     }
 }
 
