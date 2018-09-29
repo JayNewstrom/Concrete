@@ -23,7 +23,7 @@ class ConcreteWallTest {
         val concreteWall = testComponentWall()
         concreteWall.destroy()
         try {
-            concreteWall.addDestructionAction {  }
+            concreteWall.addDestructionAction {}
             fail()
         } catch (exception: IllegalStateException) {
             assertThat(exception).hasMessage("Concrete wall has been destroyed.")
@@ -141,7 +141,7 @@ class ConcreteWallTest {
         val childWall = foundation.stack(block)
         foundation.destroy()
         try {
-            childWall.addDestructionAction {  }
+            childWall.addDestructionAction {}
             fail()
         } catch (exception: IllegalStateException) {
             assertThat(exception).hasMessage("Concrete wall has been destroyed.")
