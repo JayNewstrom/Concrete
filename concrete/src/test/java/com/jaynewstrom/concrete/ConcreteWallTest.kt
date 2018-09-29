@@ -19,11 +19,11 @@ class ConcreteWallTest {
         return Concrete.pourFoundation(DaggerConcreteWallTest_TestComponent.create())
     }
 
-    @Test fun ensureDestroyedWallThrowsWhenCallingComponent() {
+    @Test fun ensureDestroyedWallThrowsWhenCallingAddDestructionAction() {
         val concreteWall = testComponentWall()
         concreteWall.destroy()
         try {
-            concreteWall.component
+            concreteWall.addDestructionAction {  }
             fail()
         } catch (exception: IllegalStateException) {
             assertThat(exception).hasMessage("Concrete wall has been destroyed.")
@@ -118,7 +118,7 @@ class ConcreteWallTest {
 
     @Test fun whenWallIsDestroyedEnsureItCanBeGarbageCollected() {
         val foundation = testComponentWall()
-        val block = spy(TestChildBlock(foundation.component))
+        val block = TestChildBlock(foundation.component)
         val wallWeakReference = WeakReference(foundation.stack(block))
         wallWeakReference.get()!!.destroy()
         System.gc()
@@ -127,7 +127,7 @@ class ConcreteWallTest {
 
     @Test fun whenChildIsDestroyedEnsureTheParentIsStillUsable() {
         val foundation = testComponentWall()
-        val block = spy(TestChildBlock(foundation.component))
+        val block = TestChildBlock(foundation.component)
         val childWall = foundation.stack(block)
         childWall.destroy()
         val target = TestTarget()
@@ -137,11 +137,11 @@ class ConcreteWallTest {
 
     @Test fun whenParentIsDestroyedEnsureChildrenAreAlsoDestroyed() {
         val foundation = testComponentWall()
-        val block = spy(TestChildBlock(foundation.component))
+        val block = TestChildBlock(foundation.component)
         val childWall = foundation.stack(block)
         foundation.destroy()
         try {
-            childWall.component
+            childWall.addDestructionAction {  }
             fail()
         } catch (exception: IllegalStateException) {
             assertThat(exception).hasMessage("Concrete wall has been destroyed.")

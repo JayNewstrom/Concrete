@@ -12,12 +12,7 @@ class ConcreteWall<out C> internal constructor(
      * Get the component associated with the wall.
      */
     val component: C = block.createComponent()
-        get() {
-            if (destroyed) {
-                throw IllegalStateException("Concrete wall has been destroyed.")
-            }
-            return field
-        }
+
     private val destructionActions: MutableSet<ConcreteWallDestructionAction<C>> = LinkedHashSet()
 
     /**
@@ -29,6 +24,10 @@ class ConcreteWall<out C> internal constructor(
         block: ConcreteBlock<ChildComponent>,
         initializationAction: ((wall: ConcreteWall<ChildComponent>) -> Unit)? = null
     ): ConcreteWall<ChildComponent> {
+        if (destroyed) {
+            throw IllegalStateException("Concrete wall has been destroyed.")
+        }
+
         @Suppress("UNCHECKED_CAST")
         val existingWall = childrenWalls[block.name()] as ConcreteWall<ChildComponent>?
         return if (existingWall != null) {
