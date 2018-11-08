@@ -4,14 +4,12 @@ import android.app.Application
 
 import com.jaynewstrom.concrete.Concrete
 import com.jaynewstrom.concrete.ConcreteWall
-import com.squareup.leakcanary.LeakCanary
 
 class ConcreteSampleApplication : Application() {
     private lateinit var foundation: ConcreteWall<ApplicationComponent>
 
     override fun onCreate() {
         super.onCreate()
-        LeakCanary.install(this)
         foundation = Concrete.pourFoundation(createApplicationComponent())
     }
 
