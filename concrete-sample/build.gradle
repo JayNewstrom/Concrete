@@ -16,9 +16,6 @@ dependencies {
 
     implementation deps.appCompat
 
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
-
     implementation deps.dagger
     kapt deps.daggerCompiler
 
@@ -27,5 +24,6 @@ dependencies {
     androidTestImplementation deps.junit
     androidTestImplementation deps.androidTestRunner
     androidTestImplementation deps.androidTestRules
+    androidTestImplementation deps.androidTestJunitRunner
     androidTestImplementation deps.espressoCore
 }
