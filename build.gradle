@@ -26,6 +26,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.0.0'
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.28.1"
     }
 }
 
@@ -52,32 +53,35 @@ subprojects {
         }
     }
 
-    configureKotlinLint(it)
+    configureSpotless(it)
     configureAndroidPlugin(it)
 }
 
-static def configureKotlinLint(Project project) {
+static def configureSpotless(Project project) {
+    project.apply plugin: 'com.diffplug.gradle.spotless'
+
+    project.spotless {
+        format 'misc', {
+            target '**/*.gradle', '**/*.md', '**/.gitignore'
+
+            trimTrailingWhitespace()
+            indentWithSpaces()
+            endWithNewline()
+        }
+    }
+
     def closure = {
-        project.configurations {
-            ktlint
-        }
-
-        project.dependencies {
-            ktlint 'com.github.shyiko:ktlint:0.29.0'
-        }
-
-        def ktlintCheck = project.tasks.create('ktlintCheck', JavaExec.class) {
-            main = 'com.github.shyiko.ktlint.Main'
-            classpath = project.configurations.ktlint
-            args 'src/**/*.kt'
-        }
-
-        project.check.dependsOn ktlintCheck
-
-        project.tasks.create('ktlintFormat', JavaExec.class) {
-            main = 'com.github.shyiko.ktlint.Main'
-            classpath = project.configurations.ktlint
-            args '-r', 'src/**/*.kt'
+        project.spotless {
+            kotlin {
+                target '**/*.kt'
+                ktlint('0.37.0').userData([
+                        'max_line_length': '120',
+                        'indent_size': '4',
+                        'continuation_indent_size': '4',
+                        'insert_final_newline': 'true',
+                        'end_of_line': 'crlf',
+                ])
+            }
         }
     }
     project.plugins.withId('kotlin-android', closure)

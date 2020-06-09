@@ -1,7 +1,6 @@
 package com.jaynewstrom.concretesample.main
 
 import com.jaynewstrom.concretesample.application.ApplicationComponent
-
 import dagger.Component
 
 @ForMainActivity

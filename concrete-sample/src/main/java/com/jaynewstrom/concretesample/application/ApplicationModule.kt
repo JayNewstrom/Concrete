@@ -2,7 +2,6 @@ package com.jaynewstrom.concretesample.application
 
 import android.app.Application
 import android.content.Context
-
 import dagger.Module
 import dagger.Provides
 

@@ -1,7 +1,6 @@
 package com.jaynewstrom.concretesample.application
 
 import android.app.Application
-
 import com.jaynewstrom.concrete.Concrete
 import com.jaynewstrom.concrete.ConcreteWall
 
