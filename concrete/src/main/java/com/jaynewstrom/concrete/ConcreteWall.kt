@@ -8,6 +8,7 @@ class ConcreteWall<out C> internal constructor(
 ) {
     private var destroyed: Boolean = false
     private val childrenWalls: MutableMap<String, ConcreteWall<*>> = LinkedHashMap()
+
     /**
      * Get the component associated with the wall.
      */
@@ -106,18 +107,26 @@ class ConcreteWall<out C> internal constructor(
      * Returns this walls component if it implements the given type, or looks up the tree, into the parent walls to find
      * one that implements the given type.
      */
-    @Suppress("UNCHECKED_CAST") // Guarded by isInstance checks.
     fun <T> componentOfTypeIncludingParents(type: Class<T>): T {
+        return havingComponentTypeIncludingParents(type).component
+    }
+
+    /**
+     * Returns this wall if its associated component implements the given type, or looks up the tree, into the parent
+     * walls to find one that has a component that implements the given type.
+     */
+    @Suppress("UNCHECKED_CAST") // Guarded by isInstance checks.
+    fun <T> havingComponentTypeIncludingParents(type: Class<T>): ConcreteWall<T> {
         val component = component
         if (type.isInstance(component)) {
-            return component as T
+            return this as ConcreteWall<T>
         }
 
         var parentWall = parentWall
         while (parentWall != null) {
             val parentComponent = parentWall.component
             if (type.isInstance(parentComponent)) {
-                return parentComponent as T
+                return parentWall as ConcreteWall<T>
             }
             parentWall = parentWall.parentWall
         }
