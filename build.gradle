@@ -1,21 +1,21 @@
 ext {
-    targetSdkVersion = 28
-    kotlinVersion = '1.3.0'
+    targetSdkVersion = 29
+    kotlinVersion = '1.3.72'
 }
 
 ext.deps = [
-        appCompat: 'androidx.appcompat:appcompat:1.0.2',
-        dagger: 'com.google.dagger:dagger:2.19',
-        daggerCompiler: 'com.google.dagger:dagger-compiler:2.19',
+        appCompat: 'androidx.appcompat:appcompat:1.1.0',
+        dagger: 'com.google.dagger:dagger:2.28',
+        daggerCompiler: 'com.google.dagger:dagger-compiler:2.28',
         kotlinRuntime: "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion",
 
-        junit: 'junit:junit:4.12',
+        junit: 'junit:junit:4.13',
         fest: 'org.easytesting:fest-assert-core:2.0M10',
-        mockitoCore: 'org.mockito:mockito-core:2.22.0',
-        androidTestRunner: 'androidx.test:runner:1.1.0',
-        androidTestRules: 'androidx.test:rules:1.1.0',
-        androidTestJunitRunner: 'androidx.test.ext:junit:1.0.0',
-        espressoCore: 'androidx.test.espresso:espresso-core:3.1.0',
+        mockitoCore: 'org.mockito:mockito-core:2.28.2',
+        androidTestRunner: 'androidx.test:runner:1.2.0',
+        androidTestRules: 'androidx.test:rules:1.2.0',
+        androidTestJunitRunner: 'androidx.test.ext:junit:1.1.1',
+        espressoCore: 'androidx.test.espresso:espresso-core:3.2.0',
 ]
 
 buildscript {
@@ -24,7 +24,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.android.tools.build:gradle:4.0.0'
     }
 }
 
@@ -86,7 +86,7 @@ static def configureKotlinLint(Project project) {
 static def configureAndroidPlugin(Project project) {
     def closure = {
         project.android {
-            compileSdkVersion 28
+            compileSdkVersion 29
 
             compileOptions {
                 sourceCompatibility JavaVersion.VERSION_1_8

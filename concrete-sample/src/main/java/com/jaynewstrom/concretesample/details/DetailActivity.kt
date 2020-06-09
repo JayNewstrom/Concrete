@@ -19,7 +19,7 @@ class DetailActivity : BaseActivity<DetailComponent>() {
     }
 
     override fun concreteBlock(applicationComponent: ApplicationComponent): DetailConcreteBlock {
-        return DetailConcreteBlock(applicationComponent, intent.getStringExtra(INTENT_KEY_TITLE))
+        return DetailConcreteBlock(applicationComponent, intent.getStringExtra(INTENT_KEY_TITLE)!!)
     }
 
     override fun performInject(component: DetailComponent) {
