@@ -21,4 +21,5 @@ dependencies {
     androidTestImplementation deps.androidTestRunner
     androidTestImplementation deps.androidTestRules
     androidTestImplementation deps.espressoCore
+    androidTestImplementation deps.androidTestJunit
 }
