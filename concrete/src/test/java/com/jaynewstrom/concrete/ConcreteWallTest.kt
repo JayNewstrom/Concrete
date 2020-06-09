@@ -215,4 +215,36 @@ class ConcreteWallTest {
             assertThat(e).hasMessageContaining("context is not associated with a wall having a component implementing")
         }
     }
+
+    @Test fun wallHavingComponentTypeIncludingParentsReturnsCurrentComponent() {
+        val foundation = testComponentWall()
+        val block = TestChildBlock(foundation.component)
+        val wall = foundation.stack(block)
+        val actual = wall.havingComponentTypeIncludingParents(TestChildComponent::class.java)
+        assertThat(actual).isNotNull
+        assertThat(actual.component).isInstanceOf(TestChildComponent::class.java)
+        assertThat(actual).isEqualTo(wall)
+    }
+
+    @Test fun wallHavingComponentTypeIncludingParentsReturnsParentComponent() {
+        val foundation = testComponentWall()
+        val block = TestChildBlock(foundation.component)
+        val wall = foundation.stack(block)
+        val actual = wall.havingComponentTypeIncludingParents(TestComponent::class.java)
+        assertThat(actual).isNotNull
+        assertThat(actual.component).isInstanceOf(TestComponent::class.java)
+        assertThat(actual.component).isNotInstanceOf(TestChildComponent::class.java)
+    }
+
+    @Test fun wallHavingComponentTypeIncludingParentsThrowsOnUnknownComponent() {
+        val foundation = testComponentWall()
+        val block = TestChildBlock(foundation.component)
+        val wall = foundation.stack(block)
+        try {
+            wall.havingComponentTypeIncludingParents(ConcreteWallTest::class.java)
+            fail()
+        } catch (e: IllegalArgumentException) {
+            assertThat(e).hasMessageContaining("context is not associated with a wall having a component implementing")
+        }
+    }
 }
