@@ -84,8 +84,8 @@ static def configureSpotless(Project project) {
             }
         }
     }
-    project.plugins.withId('kotlin-android', closure)
-    project.plugins.withId('kotlin', closure)
+    project.pluginManager.withPlugin('kotlin-android', closure)
+    project.pluginManager.withPlugin('kotlin', closure)
 }
 
 static def configureAndroidPlugin(Project project) {
@@ -106,6 +106,6 @@ static def configureAndroidPlugin(Project project) {
         }
     }
 
-    project.plugins.withId('com.android.application', closure)
-    project.plugins.withId('com.android.library', closure)
+    project.pluginManager.withPlugin('com.android.application', closure)
+    project.pluginManager.withPlugin('com.android.library', closure)
 }
