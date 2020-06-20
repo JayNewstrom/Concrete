@@ -1,0 +1,27 @@
+name: Publish a release
+
+on:
+  push:
+    tags:
+      - 'release-*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
+      - name: Cache gradle
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Run the build
+        env:
+          JAY_NEWSTROM_BINTRAY_USER: ${{ secrets.JAY_NEWSTROM_BINTRAY_USER }}
+          JAY_NEWSTROM_BINTRAY_API_KEY: ${{ secrets.JAY_NEWSTROM_BINTRAY_API_KEY }}
+        run: ./gradlew bintrayUpload --max-workers=1

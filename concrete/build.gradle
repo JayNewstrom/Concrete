@@ -26,25 +26,20 @@ artifacts {
 group = PROJECT_GROUP_ID
 version = PROJECT_VERSION
 
-if (project.rootProject.file('local.properties').exists()) {
-    Properties localProperties = new Properties()
-    localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-    bintray {
-        user = localProperties.getProperty('bintrayUser')
-        key = localProperties.getProperty('bintrayApiKey')
-        configurations = ['archives']
-        publish = true
-        pkg {
-            repo = PROJECT_REPO
-            name = 'concrete'
-            userOrg = user
-            licenses = ['Apache-2.0']
-            vcsUrl = PROJECT_VCS_URL
-            version {
-                name = PROJECT_VERSION
-                desc = PROJECT_DESCRIPTION
-            }
+bintray {
+    user = System.getenv('JAY_NEWSTROM_BINTRAY_USER')
+    key = System.getenv('JAY_NEWSTROM_BINTRAY_API_KEY')
+    configurations = ['archives']
+    publish = true
+    pkg {
+        repo = PROJECT_REPO
+        name = 'concrete'
+        userOrg = user
+        licenses = ['Apache-2.0']
+        vcsUrl = PROJECT_VCS_URL
+        version {
+            name = PROJECT_VERSION
+            desc = PROJECT_DESCRIPTION
         }
     }
 }
